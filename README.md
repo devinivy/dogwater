@@ -1,6 +1,6 @@
 ![dogwater](http://i.imgur.com/bfMM0Cy.png)
 
-A [Hapi](https://github.com/hapijs/hapi) plugin for [Waterline ORM](https://github.com/balderdashy/waterline).
+A [Hapi](https://github.com/hapijs/hapi) plugin integrating [Waterline ORM](https://github.com/balderdashy/waterline).
 
 ---
 
