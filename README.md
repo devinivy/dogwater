@@ -1,7 +1,8 @@
-dogwater
-========
+![dogwater](http://i.imgur.com/bfMM0Cy.png)
 
-A Hapi plugin for Waterline ORM.
+A [Hapi](https://github.com/hapijs/hapi) plugin for [Waterline ORM](https://github.com/balderdashy/waterline).
+
+---
 
 Dogwater takes three options, all of which are essentially necessary:
 * `connections`
@@ -9,8 +10,8 @@ Dogwater takes three options, all of which are essentially necessary:
 * `adapters`
   * An object whose keys are adapter names (to be referenced in the `connections` option), and whose values are [Waterline adapter modules](https://github.com/balderdashy/sails-docs/blob/0.9/Database-Support.md)
 * `models`
-  * Either a path to be `require`d that will return an array of [unextended Waterline models](https://github.com/balderdashy/waterline-docs/blob/master/models.md#how-do-i-define-a-model) or,
-  * An array of unextended Waterline models
+  * Either a path to be `require`d that will return an array of [unextended Waterline collections](https://github.com/balderdashy/waterline-docs/blob/master/models.md#how-do-i-define-a-model) or,
+  * An array of unextended Waterline collections
 
 Dogwater then exposes the collections.  Example of usage in a Hapi route handler:
 ```
