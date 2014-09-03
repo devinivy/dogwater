@@ -27,15 +27,15 @@ experiment('Dogwater', function () {
     
     // Setup adapters for testing fixtures.
     var fixtureAdapters = { foo: require('sails-memory') };
+
+    var modelsFile   = './models.definition.js';
+    var fixturesFile = './models.fixtures.json';
     
     // Setup Hapi server to register the plugin
     beforeEach(function(done){
         server = new Hapi.Server();
         done();
     });
-
-    var modelsFile   = './models.definition.js';
-    var fixturesFile = './models.fixtures.json';
     
     test('takes its models option as a path.', function (done) {
         
@@ -49,7 +49,6 @@ experiment('Dogwater', function () {
            plugin: require('..'),
            options: options
         };
-        
         
         server.pack.register(plugin, function (err) {
             
@@ -71,7 +70,6 @@ experiment('Dogwater', function () {
            plugin: require('..'),
            options: options
         };
-        
         
         server.pack.register(plugin, function (err) {
             
@@ -103,7 +101,7 @@ experiment('Dogwater', function () {
     });
     
     
-    test('exposes Waterline collections.', function (done) {
+    test('exposes Waterline collections to server.', function (done) {
         
         var options = {
             connections: connections,
@@ -128,6 +126,43 @@ experiment('Dogwater', function () {
         });
     });
     
+    test('exposes Waterline collections to request.', function (done) {
+        
+        var options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: require(modelsFile)
+        };
+
+        var plugin = {
+           plugin: require('..'),
+           options: options
+        };
+        
+        server.pack.register(plugin, function (err) {
+            
+            expect(err).not.to.exist;
+            
+            server.route({
+                path: "/",
+                method: "GET",
+                handler: function(request, reply) {
+                    
+                    var dogwater = request.model;
+                    
+                    expect(dogwater.bar).to.be.an('object');
+                    expect(dogwater.zoo).to.be.an('object');
+                    
+                    reply({});
+                }
+            });
+            
+            server.inject({url: "/", method: "GET"}, function(response) {
+                done();
+            });
+            
+        });
+    });
     
     test('loads fixtures using waterline-fixtures.', function (done) {
         
@@ -156,9 +191,10 @@ experiment('Dogwater', function () {
                 
                 dogwater.zoo.find()
                 .then(function (zoos) {
-
+                    
                     expect(bars).to.have.length(2);
                     expect(zoos).to.have.length(1);
+                    
                     done();
                     
                 });
