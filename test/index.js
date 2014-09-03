@@ -23,7 +23,10 @@ experiment('Dogwater', function () {
         }
     };
     
-    var adapters = { foo: {} };
+    var dummyAdapters = { foo: {} };
+    
+    // Setup adapters for testing fixtures.
+    var fixtureAdapters = { foo: require('sails-memory') };
     
     // Setup Hapi server to register the plugin
     beforeEach(function(done){
@@ -31,13 +34,14 @@ experiment('Dogwater', function () {
         done();
     });
 
-    var modelsFile = './models.data.js';
+    var modelsFile   = './models.definition.js';
+    var fixturesFile = './models.fixtures.json';
     
     test('takes its models option as a path.', function (done) {
         
         var options = {
             connections: connections,
-            adapters: adapters,
+            adapters: dummyAdapters,
             models: Path.normalize(__dirname + '/' + modelsFile)
         };
 
@@ -59,7 +63,7 @@ experiment('Dogwater', function () {
         
         var options = {
             connections: connections,
-            adapters: adapters,
+            adapters: dummyAdapters,
             models: require(modelsFile)
         };
 
@@ -81,7 +85,7 @@ experiment('Dogwater', function () {
         
         var options = {
             connections: connections,
-            adapters: adapters,
+            adapters: dummyAdapters,
             models: {some: 'object'}
         };
 
@@ -98,11 +102,12 @@ experiment('Dogwater', function () {
         });
     });
     
+    
     test('exposes Waterline collections.', function (done) {
         
         var options = {
             connections: connections,
-            adapters: adapters,
+            adapters: dummyAdapters,
             models: require(modelsFile)
         };
 
@@ -120,6 +125,46 @@ experiment('Dogwater', function () {
             expect(dogwater.zoo).to.be.an('object');
             
             done();
+        });
+    });
+    
+    
+    test('loads fixtures using waterline-fixtures.', function (done) {
+        
+        var options = {
+            connections: connections,
+            adapters: fixtureAdapters,
+            models: require(modelsFile),
+            data: {
+                fixtures: require(fixturesFile)
+            }
+        };
+
+        var plugin = {
+           plugin: require('..'),
+           options: options
+        };
+        
+        server.pack.register(plugin, function (err) {
+            
+            expect(err).to.not.exist;
+            
+            var dogwater = server.plugins.dogwater;
+            
+            dogwater.bar.find()
+            .then(function(bars) {
+                
+                dogwater.zoo.find()
+                .then(function (zoos) {
+
+                    expect(bars).to.have.length(2);
+                    expect(zoos).to.have.length(1);
+                    done();
+                    
+                });
+                
+            });
+            
         });
     });
     

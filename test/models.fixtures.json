@@ -1,0 +1,24 @@
+[
+  {
+    "model": "bar",
+    "items":[
+      {
+        "id": 1,
+        "foo": "Stimpy"
+      },
+      {
+        "id":2,
+        "foo": "Alonzo"
+      }
+    ]
+  },
+  {
+    "model": "zoo",
+    "items":[
+      {
+        "id": 1,
+        "ding": 666
+      }
+    ]
+  }
+]

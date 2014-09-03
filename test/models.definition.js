@@ -12,7 +12,7 @@ module.exports = [
         connection: 'my_foo',
         
         attributes: {
-            ding: 'number'
+            ding: 'float'
         }
     }
 ];
