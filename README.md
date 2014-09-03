@@ -15,14 +15,34 @@ Dogwater takes four options:
 * `data`
   * An object containing the configuration used by [waterline-fixtures](https://github.com/devinivy/waterline-fixtures) to load data fixtures, with the exception of the `collections` option
 
-Dogwater then exposes the collections.  Example of usage in a Hapi route handler:
+Dogwater then exposes the collections to `Server.plugins.dogwater` via [Plugin.expose](http://hapijs.com/api#pluginexposeobj) and also to `Request.model`.
+
+Example of usage in a Hapi route handler:
 ```
 server.route({
     method: 'GET',
     path: '/monkeys',
     handler: function (request, reply) {
     
-        var Monkeys = request.server.plugins['dogwater'].monkeys
+        var Monkeys = request.model.monkeys;
+        
+        Monkeys.find().then(function(monkeys) {
+            reply(monkeys);
+        });
+        
+    }
+});
+```
+
+or equivalently,
+ 
+```
+var Monkeys = server.plugins.dogwater.monkeys;
+
+server.route({
+    method: 'GET',
+    path: '/monkeys',
+    handler: function (request, reply) {
         
         Monkeys.find().then(function(monkeys) {
             reply(monkeys);
