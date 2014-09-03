@@ -1,6 +1,6 @@
 {
     "name": "dogwater",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "A Hapi plugin integrating Waterline ORM.",
     "main": "index.js",
     "repository": {
@@ -26,6 +26,7 @@
     },
     "devDependencies": {
         "lab": "4.x.x",
+        "hapi": "^6.7.x",
         "sails-memory": "^0.10.x"
     },
     "scripts": {
