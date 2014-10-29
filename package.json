@@ -1,6 +1,6 @@
 {
     "name": "dogwater",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "A Hapi plugin integrating Waterline ORM.",
     "main": "index.js",
     "repository": {
