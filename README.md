@@ -12,10 +12,14 @@ Dogwater takes four options:
 * `models` (required)
   * Either a path to be `require`d that will return an array of [unextended Waterline collections](https://github.com/balderdashy/waterline-docs/blob/master/models.md#how-do-i-define-a-model) or,
   * An array of unextended Waterline collections
+  
+  If a function is an element of this array, it will be called with the raw Waterline ORM object as an argument.  It is expected to return an unextended Waterline collection.  This allows one to reference Waterline in lifecycle callbacks.
+  
 * `data`
   * An object containing the configuration used by [waterline-fixtures](https://github.com/devinivy/waterline-fixtures) to load data fixtures, with the exception of the `collections` option
 
 Dogwater then exposes the collections to `Server.plugins.dogwater` via [Plugin.expose](http://hapijs.com/api#pluginexposeobj) and also to `Request.model`.
+The raw Waterline ORM object can be reteived from `Server.methods.getWaterline()` on all servers to which this plugin has been registered.
 
 Example of usage in a Hapi route handler:
 ```
