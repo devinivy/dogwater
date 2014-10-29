@@ -7,12 +7,15 @@ module.exports = [
             foo: 'string'
         }
     },
-    {
-        identity: 'zoo',
-        connection: 'my_foo',
-        
-        attributes: {
-            ding: 'float'
+    
+    function(waterline) { // Can pass waterline to model definition
+        return {
+            identity: 'zoo',
+            connection: 'my_foo',
+            
+            attributes: {
+                ding: 'float'
+            }
         }
     }
 ];

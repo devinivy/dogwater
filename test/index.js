@@ -2,6 +2,7 @@
 var Lab = require('lab');
 var Hapi = require('hapi');
 var Path = require('path');
+var Waterline = require('waterline');
 
 // Test shortcuts
 var lab = exports.lab = Lab.script();
@@ -24,6 +25,8 @@ experiment('Dogwater', function () {
     };
     
     var dummyAdapters = { foo: {} };
+    
+    var failureAdapters = 666;
     
     // Setup adapters for testing fixtures.
     var fixtureAdapters = { foo: require('sails-memory') };
@@ -102,6 +105,8 @@ experiment('Dogwater', function () {
     
     
     test('exposes Waterline collections to server.', function (done) {
+        // Via model definitions, this verifies that a definition can be a function
+        // to which waterline is passed and from which a definition is returned.
         
         var options = {
             connections: connections,
@@ -201,6 +206,27 @@ experiment('Dogwater', function () {
                 
             });
             
+        });
+    });
+    
+    test('exposes waterline through a server method.', function (done) {
+        
+        var options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: require(modelsFile)
+        };
+
+        var plugin = {
+           plugin: require('..'),
+           options: options
+        };
+        
+        server.pack.register(plugin, function (err) {
+            
+            expect(err).to.not.exist;
+            expect(server.methods.getWaterline()).to.be.instanceof(Waterline);
+            done();
         });
     });
     
