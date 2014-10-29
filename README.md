@@ -19,7 +19,7 @@ Dogwater takes four options:
   * An object containing the configuration used by [waterline-fixtures](https://github.com/devinivy/waterline-fixtures) to load data fixtures, with the exception of the `collections` option
 
 Dogwater then exposes the collections to `Server.plugins.dogwater` via [Plugin.expose](http://hapijs.com/api#pluginexposeobj) and also to `Request.model`.
-The raw Waterline ORM object can be reteived from `Server.methods.getWaterline()` on all servers to which this plugin has been registered.
+The raw Waterline ORM object can be reteived from `Server.methods.getWaterline()` (asynchronously) on all servers to which this plugin has been registered.
 
 Example of usage in a Hapi route handler:
 ```
