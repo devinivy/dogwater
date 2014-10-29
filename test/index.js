@@ -225,8 +225,12 @@ experiment('Dogwater', function () {
         server.pack.register(plugin, function (err) {
             
             expect(err).to.not.exist;
-            expect(server.methods.getWaterline()).to.be.instanceof(Waterline);
-            done();
+            
+            server.methods.getWaterline(function(err, waterline) {
+                expect(waterline).to.be.instanceof(Waterline);
+                done();
+            });
+            
         });
     });
     

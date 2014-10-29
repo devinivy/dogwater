@@ -26,7 +26,7 @@
     },
     "devDependencies": {
         "lab": "4.x.x",
-        "hapi": "^6.7.x",
+        "hapi": "~7.x.x",
         "sails-memory": "^0.10.x"
     },
     "scripts": {
