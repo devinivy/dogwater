@@ -27,6 +27,9 @@ experiment('Dogwater', function () {
     var dummyAdapters = { foo: {} };
     
     var failureAdapters = 666;
+
+    // Pass adapters as string
+    var stringsAdapters = { foo : 'sails-disk' };
     
     // Setup adapters for testing fixtures.
     var fixtureAdapters = { foo: require('sails-memory') };
@@ -45,6 +48,27 @@ experiment('Dogwater', function () {
         var options = {
             connections: connections,
             adapters: dummyAdapters,
+            models: Path.normalize(__dirname + '/' + modelsFile)
+        };
+
+        var plugin = {
+           plugin: require('..'),
+           options: options
+        };
+        
+        server.pack.register(plugin, function (err) {
+            
+            expect(err).to.not.exist;
+            
+            done();
+        });
+    });
+
+    test('takes its adapters option as a string.', function (done) {
+        
+        var options = {
+            connections: connections,
+            adapters: stringsAdapters,
             models: Path.normalize(__dirname + '/' + modelsFile)
         };
 
