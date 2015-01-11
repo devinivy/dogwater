@@ -1,8 +1,11 @@
 // Load modules
 var Lab = require('lab');
-var Hapi = require('hapi');
+var Hapi8 = require('hapi');
+var Hapi7 = require('hapi-v7');
+var Async = require('async');
 var Path = require('path');
 var Waterline = require('waterline');
+var Memory = require('sails-memory');
 
 // Test shortcuts
 var lab = exports.lab = Lab.script();
@@ -14,8 +17,9 @@ var test = lab.test;
 
 experiment('Dogwater', function () {
     
-    // This will be a Hapi server for each test.
-    var server;
+    // This will be a hapi server for each test.
+    var server8;
+    var server7;
     
     // Setup dummy connections/adapters.
     var connections = {
@@ -29,17 +33,19 @@ experiment('Dogwater', function () {
     var failureAdapters = 666;
 
     // Pass adapters as string
-    var stringsAdapters = { foo : 'sails-disk' };
+    var stringsAdapters = { foo : 'sails-memory' };
     
     // Setup adapters for testing fixtures.
-    var fixtureAdapters = { foo: require('sails-memory') };
+    var fixtureAdapters = { foo: Memory };
 
     var modelsFile   = './models.definition.js';
     var fixturesFile = './models.fixtures.json';
     
     // Setup Hapi server to register the plugin
     beforeEach(function(done){
-        server = new Hapi.Server();
+        server8 = new Hapi8.Server();
+        server8.connection();
+        server7 = new Hapi7.Server();
         done();
     });
     
@@ -50,18 +56,34 @@ experiment('Dogwater', function () {
             adapters: dummyAdapters,
             models: Path.normalize(__dirname + '/' + modelsFile)
         };
-
-        var plugin = {
+        
+        var plugin8 = {
+           register: require('..'),
+           options: options
+        };
+        
+        var plugin7 = {
            plugin: require('..'),
            options: options
         };
         
-        server.pack.register(plugin, function (err) {
+        var theTest = function (server, error, callback) {
             
-            expect(err).to.not.exist;
-            
-            done();
-        });
+            expect(error).to.not.exist;
+            callback();
+        }
+        
+        Async.series([
+            function(cb) {
+                server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
+            },
+            Memory.teardown,
+            function(cb) {
+                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
+            },
+            Memory.teardown
+        ,], done);
+        
     });
 
     test('takes its adapters option as a string.', function (done) {
@@ -72,17 +94,33 @@ experiment('Dogwater', function () {
             models: Path.normalize(__dirname + '/' + modelsFile)
         };
 
-        var plugin = {
+        var plugin8 = {
+           register: require('..'),
+           options: options
+        };
+
+        var plugin7 = {
            plugin: require('..'),
            options: options
         };
         
-        server.pack.register(plugin, function (err) {
+        var theTest = function (server, error, callback) {
             
-            expect(err).to.not.exist;
-            
-            done();
-        });
+            expect(error).to.not.exist;
+            callback();
+        }
+        
+        Async.series([
+            function(cb) {
+                server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
+            },
+            Memory.teardown,
+            function(cb) {
+                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
+            },
+            Memory.teardown
+        ,], done);
+
     });
     
     test('takes its models option as an array.', function (done) {
@@ -93,17 +131,33 @@ experiment('Dogwater', function () {
             models: require(modelsFile)
         };
 
-        var plugin = {
+        var plugin8 = {
+           register: require('..'),
+           options: options
+        };
+        
+        var plugin7 = {
            plugin: require('..'),
            options: options
         };
         
-        server.pack.register(plugin, function (err) {
+        var theTest = function (server, error, callback) {
             
-            expect(err).to.not.exist;
-            
-            done();
-        });
+            expect(error).to.not.exist;
+            callback();
+        }
+        
+        Async.series([
+            function(cb) {
+                server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
+            },
+            Memory.teardown,
+            function(cb) {
+                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
+            },
+            Memory.teardown
+        ,], done);
+        
     });
     
     test('errors if the models option is not an array or string.', function (done) {
@@ -113,18 +167,34 @@ experiment('Dogwater', function () {
             adapters: dummyAdapters,
             models: {some: 'object'}
         };
-
-        var plugin = {
+        
+        var plugin8 = {
+           register: require('..'),
+           options: options
+        };
+        
+        var plugin7 = {
            plugin: require('..'),
            options: options
         };
         
-        server.pack.register(plugin, function (err) {
+        var theTest = function (server, error, callback) {
             
-            expect(err).to.exist;
-            
-            done();
-        });
+            expect(error).to.exist;
+            callback();
+        }
+        
+        Async.series([
+            function(cb) {
+                server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
+            },
+            Memory.teardown,
+            function(cb) {
+                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
+            },
+            Memory.teardown
+        ,], done);
+        
     });
     
     
@@ -138,21 +208,38 @@ experiment('Dogwater', function () {
             models: require(modelsFile)
         };
 
-        var plugin = {
+        var plugin8 = {
+           register: require('..'),
+           options: options
+        };
+        
+        var plugin7 = {
            plugin: require('..'),
            options: options
         };
         
-        server.pack.register(plugin, function (err) {
+        var theTest = function (server, error, callback) {
             
             var dogwater = server.plugins.dogwater;
             
-            expect(err).not.to.exist;
+            expect(error).not.to.exist;
             expect(dogwater.bar).to.be.an('object');
             expect(dogwater.zoo).to.be.an('object');
             
-            done();
-        });
+            callback();
+        }
+        
+        Async.series([
+            function(cb) {
+                server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
+            },
+            Memory.teardown,
+            function(cb) {
+                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
+            },
+            Memory.teardown
+        ,], done);
+        
     });
     
     test('exposes Waterline collections to request.', function (done) {
@@ -163,14 +250,19 @@ experiment('Dogwater', function () {
             models: require(modelsFile)
         };
 
-        var plugin = {
+        var plugin8 = {
+           register: require('..'),
+           options: options
+        };
+        
+        var plugin7 = {
            plugin: require('..'),
            options: options
         };
         
-        server.pack.register(plugin, function (err) {
+        var theTest = function (server, error, callback) {
             
-            expect(err).not.to.exist;
+            expect(error).not.to.exist;
             
             server.route({
                 path: "/",
@@ -187,10 +279,21 @@ experiment('Dogwater', function () {
             });
             
             server.inject({url: "/", method: "GET"}, function(response) {
-                done();
+                callback();
             });
-            
-        });
+        }
+        
+        Async.series([
+            function(cb) {
+                server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
+            },
+            Memory.teardown,
+            function(cb) {
+                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
+            },
+            Memory.teardown
+        ,], done);
+        
     });
     
     test('loads fixtures using waterline-fixtures.', function (done) {
@@ -203,15 +306,20 @@ experiment('Dogwater', function () {
                 fixtures: require(fixturesFile)
             }
         };
-
-        var plugin = {
+        
+        var plugin8 = {
+           register: require('..'),
+           options: options
+        };
+        
+        var plugin7 = {
            plugin: require('..'),
            options: options
         };
         
-        server.pack.register(plugin, function (err) {
+        var theTest = function (server, error, callback) {
             
-            expect(err).to.not.exist;
+            expect(error).to.not.exist;
             
             var dogwater = server.plugins.dogwater;
             
@@ -224,13 +332,25 @@ experiment('Dogwater', function () {
                     expect(bars).to.have.length(2);
                     expect(zoos).to.have.length(1);
                     
-                    done();
+                    callback();
                     
                 });
                 
             });
             
-        });
+        }
+        
+        Async.series([
+            function(cb) {
+                server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
+            },
+            Memory.teardown,
+            function(cb) {
+                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
+            },
+            Memory.teardown
+        ,], done);
+        
     });
     
     test('exposes waterline through a server method.', function (done) {
@@ -240,22 +360,71 @@ experiment('Dogwater', function () {
             adapters: dummyAdapters,
             models: require(modelsFile)
         };
-
-        var plugin = {
+        
+        var plugin8 = {
+           register: require('..'),
+           options: options
+        };
+        
+        var plugin7 = {
            plugin: require('..'),
            options: options
         };
         
-        server.pack.register(plugin, function (err) {
+        var theTest = function (server, error, callback) {
             
-            expect(err).to.not.exist;
+            expect(error).to.not.exist;
             
             server.methods.getWaterline(function(err, waterline) {
                 expect(waterline).to.be.instanceof(Waterline);
+                callback();
+            });
+            
+        }
+        
+        Async.series([
+            function(cb) {
+                server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
+            },
+            Memory.teardown,
+            function(cb) {
+                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
+            },
+            Memory.teardown
+        ,], done);
+        
+    });
+
+    test('errors on fail.', function (done) {
+        
+        var options = {
+            connections: connections,
+            adapters: fixtureAdapters,
+            models: require(modelsFile)
+        };
+        
+        var plugin8 = {
+           register: require('..'),
+           options: options
+        };
+        
+        var plugin7 = {
+           plugin: require('..'),
+           options: options
+        };
+        
+        server8.register(plugin8, function(err) {
+            
+            expect(err).to.not.exist;
+            
+            // Fail by reusing adapter
+            server7.pack.register(plugin7, function(err) {
+                expect(err).to.exist;
                 done();
             });
             
         });
+        
     });
     
 });
