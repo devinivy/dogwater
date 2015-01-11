@@ -1,6 +1,6 @@
 ![dogwater](http://i.imgur.com/FPjWX9s.png)
 
-A [Hapi](https://github.com/hapijs/hapi) plugin integrating [Waterline ORM](https://github.com/balderdashy/waterline).
+A [hapi](https://github.com/hapijs/hapi) plugin integrating [Waterline ORM](https://github.com/balderdashy/waterline).
 
 ---
 
@@ -21,7 +21,7 @@ Dogwater takes four options:
 Dogwater then exposes the collections to `Server.plugins.dogwater` via [Plugin.expose](http://hapijs.com/api#pluginexposeobj) and also to `Request.model`.
 The raw Waterline ORM object can be reteived from `Server.methods.getWaterline()` (asynchronously) on all servers to which this plugin has been registered.
 
-Example of usage in a Hapi route handler:
+Example of usage in a hapi route handler:
 ```
 server.route({
     method: 'GET',
