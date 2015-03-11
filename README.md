@@ -6,7 +6,7 @@ A [hapi](https://github.com/hapijs/hapi) plugin integrating [Waterline ORM](http
 
 Dogwater takes four options:
 * `connections` (required)
-  * A [Waterline connections configuration](http://sailsjs.org/#/documentation/reference/sails.config/sails.config.connections.html)
+  * A [Waterline connections configuration](http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.connections.html)
 * `adapters` (required)
   * An object whose keys are adapter names (to be referenced in the `connections` option), and whose values are [Waterline adapter modules](https://github.com/balderdashy/sails-docs/blob/0.9/Database-Support.md)
 * `models` (required)
