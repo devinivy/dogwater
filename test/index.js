@@ -1,5 +1,6 @@
 // Load modules
 var Lab = require('lab');
+var Code = require('code');
 var Hapi8 = require('hapi');
 var Hapi7 = require('hapi-v7');
 var Async = require('async');
@@ -9,7 +10,7 @@ var Memory = require('sails-memory');
 
 // Test shortcuts
 var lab = exports.lab = Lab.script();
-var expect = Lab.expect;
+var expect = Code.expect;
 var beforeEach = lab.beforeEach;
 var experiment = lab.experiment;
 var test = lab.test;
@@ -223,8 +224,8 @@ experiment('Dogwater', function () {
             var dogwater = server.plugins.dogwater;
             
             expect(error).not.to.exist;
-            expect(dogwater.bar).to.be.an('object');
-            expect(dogwater.zoo).to.be.an('object');
+            expect(dogwater.bar).to.be.an.object();
+            expect(dogwater.zoo).to.be.an.object();
             
             callback();
         }
@@ -271,8 +272,8 @@ experiment('Dogwater', function () {
                     
                     var dogwater = request.model;
                     
-                    expect(dogwater.bar).to.be.an('object');
-                    expect(dogwater.zoo).to.be.an('object');
+                    expect(dogwater.bar).to.be.an.object();
+                    expect(dogwater.zoo).to.be.an.object();
                     
                     reply({});
                 }
