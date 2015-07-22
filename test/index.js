@@ -3,7 +3,7 @@ var Lab = require('lab');
 var Code = require('code');
 var Hapi8 = require('hapi');
 var Hapi7 = require('hapi-v7');
-var Async = require('async');
+var Items = require('items');
 var Path = require('path');
 var Waterline = require('waterline');
 var Memory = require('sails-memory');
@@ -42,6 +42,12 @@ experiment('Dogwater', function () {
     var modelsFile   = './models.definition.js';
     var fixturesFile = './models.fixtures.json';
     
+    // For use with Items.serial
+    var playItem = function(item, done) {
+        
+        item(done);
+    }
+    
     // Setup Hapi server to register the plugin
     beforeEach(function(done){
         server8 = new Hapi8.Server();
@@ -70,11 +76,11 @@ experiment('Dogwater', function () {
         
         var theTest = function (server, error, callback) {
             
-            expect(error).to.not.exist;
+            expect(error).to.not.exist();
             callback();
         }
         
-        Async.series([
+        Items.serial([
             function(cb) {
                 server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
             },
@@ -83,7 +89,7 @@ experiment('Dogwater', function () {
                 server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
             },
             Memory.teardown
-        ,], done);
+        ], playItem, done);
         
     });
 
@@ -107,11 +113,11 @@ experiment('Dogwater', function () {
         
         var theTest = function (server, error, callback) {
             
-            expect(error).to.not.exist;
+            expect(error).to.not.exist();
             callback();
         }
         
-        Async.series([
+        Items.serial([
             function(cb) {
                 server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
             },
@@ -120,7 +126,7 @@ experiment('Dogwater', function () {
                 server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
             },
             Memory.teardown
-        ,], done);
+        ], playItem, done);
 
     });
     
@@ -144,11 +150,11 @@ experiment('Dogwater', function () {
         
         var theTest = function (server, error, callback) {
             
-            expect(error).to.not.exist;
+            expect(error).to.not.exist();
             callback();
         }
         
-        Async.series([
+        Items.serial([
             function(cb) {
                 server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
             },
@@ -157,7 +163,7 @@ experiment('Dogwater', function () {
                 server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
             },
             Memory.teardown
-        ,], done);
+        ], playItem, done);
         
     });
     
@@ -181,11 +187,11 @@ experiment('Dogwater', function () {
         
         var theTest = function (server, error, callback) {
             
-            expect(error).to.exist;
+            expect(error).to.exist();
             callback();
         }
         
-        Async.series([
+        Items.serial([
             function(cb) {
                 server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
             },
@@ -194,7 +200,7 @@ experiment('Dogwater', function () {
                 server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
             },
             Memory.teardown
-        ,], done);
+        ], playItem, done);
         
     });
     
@@ -223,14 +229,14 @@ experiment('Dogwater', function () {
             
             var dogwater = server.plugins.dogwater;
             
-            expect(error).not.to.exist;
+            expect(error).not.to.exist();
             expect(dogwater.bar).to.be.an.object();
             expect(dogwater.zoo).to.be.an.object();
             
             callback();
         }
         
-        Async.series([
+        Items.serial([
             function(cb) {
                 server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
             },
@@ -239,7 +245,7 @@ experiment('Dogwater', function () {
                 server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
             },
             Memory.teardown
-        ,], done);
+        ], playItem, done);
         
     });
     
@@ -263,7 +269,7 @@ experiment('Dogwater', function () {
         
         var theTest = function (server, error, callback) {
             
-            expect(error).not.to.exist;
+            expect(error).not.to.exist();
             
             server.route({
                 path: "/",
@@ -284,7 +290,7 @@ experiment('Dogwater', function () {
             });
         }
         
-        Async.series([
+        Items.serial([
             function(cb) {
                 server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
             },
@@ -293,7 +299,7 @@ experiment('Dogwater', function () {
                 server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
             },
             Memory.teardown
-        ,], done);
+        ], playItem, done);
         
     });
     
@@ -320,7 +326,7 @@ experiment('Dogwater', function () {
         
         var theTest = function (server, error, callback) {
             
-            expect(error).to.not.exist;
+            expect(error).to.not.exist();
             
             var dogwater = server.plugins.dogwater;
             
@@ -341,7 +347,7 @@ experiment('Dogwater', function () {
             
         }
         
-        Async.series([
+        Items.serial([
             function(cb) {
                 server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
             },
@@ -350,7 +356,7 @@ experiment('Dogwater', function () {
                 server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
             },
             Memory.teardown
-        ,], done);
+        ], playItem, done);
         
     });
     
@@ -374,7 +380,7 @@ experiment('Dogwater', function () {
         
         var theTest = function (server, error, callback) {
             
-            expect(error).to.not.exist;
+            expect(error).to.not.exist();
             
             server.methods.getWaterline(function(err, waterline) {
                 expect(waterline).to.be.instanceof(Waterline);
@@ -383,7 +389,7 @@ experiment('Dogwater', function () {
             
         }
         
-        Async.series([
+        Items.serial([
             function(cb) {
                 server8.register(plugin8, function(err) { theTest(server8, err, cb) } );
             },
@@ -392,7 +398,7 @@ experiment('Dogwater', function () {
                 server7.pack.register(plugin7, function(err) { theTest(server7, err, cb) } );
             },
             Memory.teardown
-        ,], done);
+        ], playItem, done);
         
     });
 
@@ -416,11 +422,11 @@ experiment('Dogwater', function () {
         
         server8.register(plugin8, function(err) {
             
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             
             // Fail by reusing adapter
             server7.pack.register(plugin7, function(err) {
-                expect(err).to.exist;
+                expect(err).to.exist();
                 done();
             });
             
