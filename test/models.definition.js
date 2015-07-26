@@ -8,7 +8,8 @@ module.exports = [
         }
     },
 
-    function(waterline) { // Can pass waterline to model definition
+    function (waterline) { // Can pass waterline to model definition
+
         return {
             identity: 'zoo',
             connection: 'my_foo',
