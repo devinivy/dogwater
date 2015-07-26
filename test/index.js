@@ -43,13 +43,14 @@ experiment('Dogwater', function () {
     var fixturesFile = './models.fixtures.json';
 
     // For use with Items.serial
-    var playItem = function(item, done) {
+    var playItem = function (item, done) {
 
         item(done);
     };
 
     // Setup Hapi server to register the plugin
-    beforeEach(function(done){
+    beforeEach(function (done) {
+
         server8 = new Hapi8.Server();
         server8.connection();
         server7 = new Hapi7.Server();
@@ -81,12 +82,20 @@ experiment('Dogwater', function () {
         };
 
         Items.serial([
-            function(cb) {
-                server8.register(plugin8, function(err) { theTest(server8, err, cb); } );
+            function (cb) {
+
+                server8.register(plugin8, function (err) {
+
+                    theTest(server8, err, cb);
+                });
             },
             Memory.teardown,
-            function(cb) {
-                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb); } );
+            function (cb) {
+
+                server7.pack.register(plugin7, function (err) {
+
+                    theTest(server7, err, cb);
+                });
             },
             Memory.teardown
         ], playItem, done);
@@ -118,12 +127,20 @@ experiment('Dogwater', function () {
         };
 
         Items.serial([
-            function(cb) {
-                server8.register(plugin8, function(err) { theTest(server8, err, cb); } );
+            function (cb) {
+
+                server8.register(plugin8, function (err) {
+
+                    theTest(server8, err, cb);
+                });
             },
             Memory.teardown,
-            function(cb) {
-                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb); } );
+            function (cb) {
+
+                server7.pack.register(plugin7, function (err) {
+
+                    theTest(server7, err, cb);
+                });
             },
             Memory.teardown
         ], playItem, done);
@@ -155,12 +172,20 @@ experiment('Dogwater', function () {
         };
 
         Items.serial([
-            function(cb) {
-                server8.register(plugin8, function(err) { theTest(server8, err, cb); } );
+            function (cb) {
+
+                server8.register(plugin8, function (err) {
+
+                    theTest(server8, err, cb);
+                });
             },
             Memory.teardown,
-            function(cb) {
-                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb); } );
+            function (cb) {
+
+                server7.pack.register(plugin7, function (err) {
+
+                    theTest(server7, err, cb);
+                });
             },
             Memory.teardown
         ], playItem, done);
@@ -172,7 +197,7 @@ experiment('Dogwater', function () {
         var options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: {some: 'object'}
+            models: { some: 'object' }
         };
 
         var plugin8 = {
@@ -192,12 +217,20 @@ experiment('Dogwater', function () {
         };
 
         Items.serial([
-            function(cb) {
-                server8.register(plugin8, function(err) { theTest(server8, err, cb); } );
+            function (cb) {
+
+                server8.register(plugin8, function (err) {
+
+                    theTest(server8, err, cb);
+                });
             },
             Memory.teardown,
-            function(cb) {
-                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb); } );
+            function (cb) {
+
+                server7.pack.register(plugin7, function (err) {
+
+                    theTest(server7, err, cb);
+                });
             },
             Memory.teardown
         ], playItem, done);
@@ -237,12 +270,20 @@ experiment('Dogwater', function () {
         };
 
         Items.serial([
-            function(cb) {
-                server8.register(plugin8, function(err) { theTest(server8, err, cb); } );
+            function (cb) {
+
+                server8.register(plugin8, function (err) {
+
+                    theTest(server8, err, cb);
+                });
             },
             Memory.teardown,
-            function(cb) {
-                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb); } );
+            function (cb) {
+
+                server7.pack.register(plugin7, function (err) {
+
+                    theTest(server7, err, cb);
+                });
             },
             Memory.teardown
         ], playItem, done);
@@ -274,7 +315,7 @@ experiment('Dogwater', function () {
             server.route({
                 path: '/',
                 method: 'GET',
-                handler: function(request, reply) {
+                handler: function (request, reply) {
 
                     var dogwater = request.model;
 
@@ -285,18 +326,27 @@ experiment('Dogwater', function () {
                 }
             });
 
-            server.inject({url: '/', method: 'GET'}, function(response) {
+            server.inject({ url: '/', method: 'GET' }, function (response) {
+
                 callback();
             });
         };
 
         Items.serial([
-            function(cb) {
-                server8.register(plugin8, function(err) { theTest(server8, err, cb); } );
+            function (cb) {
+
+                server8.register(plugin8, function (err) {
+
+                    theTest(server8, err, cb);
+                });
             },
             Memory.teardown,
-            function(cb) {
-                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb); } );
+            function (cb) {
+
+                server7.pack.register(plugin7, function (err) {
+
+                    theTest(server7, err, cb);
+                });
             },
             Memory.teardown
         ], playItem, done);
@@ -331,7 +381,7 @@ experiment('Dogwater', function () {
             var dogwater = server.plugins.dogwater;
 
             dogwater.bar.find()
-            .then(function(bars) {
+            .then(function (bars) {
 
                 dogwater.zoo.find()
                 .then(function (zoos) {
@@ -348,12 +398,20 @@ experiment('Dogwater', function () {
         };
 
         Items.serial([
-            function(cb) {
-                server8.register(plugin8, function(err) { theTest(server8, err, cb); } );
+            function (cb) {
+
+                server8.register(plugin8, function (err) {
+
+                    theTest(server8, err, cb);
+                });
             },
             Memory.teardown,
-            function(cb) {
-                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb); } );
+            function (cb) {
+
+                server7.pack.register(plugin7, function (err) {
+
+                    theTest(server7, err, cb);
+                });
             },
             Memory.teardown
         ], playItem, done);
@@ -382,7 +440,8 @@ experiment('Dogwater', function () {
 
             expect(error).to.not.exist();
 
-            server.methods.getWaterline(function(err, waterline) {
+            server.methods.getWaterline(function (err, waterline) {
+
                 expect(waterline).to.be.instanceof(Waterline);
                 callback();
             });
@@ -390,12 +449,20 @@ experiment('Dogwater', function () {
         };
 
         Items.serial([
-            function(cb) {
-                server8.register(plugin8, function(err) { theTest(server8, err, cb); } );
+            function (cb) {
+
+                server8.register(plugin8, function (err) {
+
+                    theTest(server8, err, cb);
+                });
             },
             Memory.teardown,
-            function(cb) {
-                server7.pack.register(plugin7, function(err) { theTest(server7, err, cb); } );
+            function (cb) {
+
+                server7.pack.register(plugin7, function (err) {
+
+                    theTest(server7, err, cb);
+                });
             },
             Memory.teardown
         ], playItem, done);
@@ -420,12 +487,13 @@ experiment('Dogwater', function () {
            options: options
         };
 
-        server8.register(plugin8, function(err) {
+        server8.register(plugin8, function (err) {
 
             expect(err).to.not.exist();
 
             // Fail by reusing adapter
-            server7.pack.register(plugin7, function(err) {
+            server7.pack.register(plugin7, function (err) {
+
                 expect(err).to.exist();
                 done();
             });
