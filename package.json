@@ -1,42 +1,42 @@
 {
-    "name": "dogwater",
-    "version": "0.4.6",
-    "description": "A hapi plugin integrating Waterline ORM.",
-    "main": "index.js",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/devinivy/dogwater"
-    },
-    "contributors": [
-        {
-            "name": "devinivy",
-            "github": "https://github.com/devinivy"
-        }
-    ],
-    "keywords": [
-        "hapi",
-        "plugin",
-        "waterline",
-        "database",
-        "orm"
-    ],
-    "dependencies": {
-        "waterline": "^0.10.8",
-        "waterline-fixtures": "^0.2.x"
-    },
-    "devDependencies": {
-        "lab": "5.x.x",
-        "code": "1.x.x",
-        "coveralls": "2.x.x",
-        "hapi": "~8.x.x",
-        "hapi-v7": "git://github.com/devinivy/hapi-v7.git",
-        "items": "1.x.x",
-        "sails-memory": "0.10.x"
-    },
-    "scripts": {
-        "test": "node_modules/.bin/lab -I \"inspect,URI\" -a code -t 100 -L",
-        "coveralls": "node_modules/.bin/lab -r lcov | node_modules/.bin/coveralls"
-    },
-    "author": "Devin Ivy",
-    "license": "MIT"
+  "name": "dogwater",
+  "version": "0.4.7",
+  "description": "A hapi plugin integrating Waterline ORM.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devinivy/dogwater"
+  },
+  "contributors": [
+    {
+      "name": "devinivy",
+      "github": "https://github.com/devinivy"
+    }
+  ],
+  "keywords": [
+    "hapi",
+    "plugin",
+    "waterline",
+    "database",
+    "orm"
+  ],
+  "dependencies": {
+    "waterline": "^0.10.8",
+    "waterline-fixtures": "^0.2.x"
+  },
+  "devDependencies": {
+    "lab": "5.x.x",
+    "code": "1.x.x",
+    "coveralls": "2.x.x",
+    "hapi": "~8.x.x",
+    "hapi-v7": "git://github.com/devinivy/hapi-v7.git",
+    "items": "1.x.x",
+    "sails-memory": "0.10.x"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/lab -I \"inspect,URI\" -a code -t 100 -L",
+    "coveralls": "node_modules/.bin/lab -r lcov | node_modules/.bin/coveralls"
+  },
+  "author": "Devin Ivy",
+  "license": "MIT"
 }
