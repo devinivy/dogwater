@@ -55,8 +55,53 @@ experiment('Dogwater', function () {
         server7 = new Hapi7.Server();
         done();
     });
+
+    test('takes its models option as a relative path.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: Path.normalize('./test/' + modelsFile)
+        };
+
+        var plugin8 = {
+           register: require('..'),
+           options: options
+        };
+
+        var plugin7 = {
+           plugin: require('..'),
+           options: options
+        };
+
+        var theTest = function (server, error, callback) {
+
+            expect(error).to.not.exist();
+            callback();
+        };
+
+        Items.serial([
+            function (cb) {
+
+                server8.register(plugin8, function (err) {
+
+                    theTest(server8, err, cb);
+                });
+            },
+            Memory.teardown,
+            function (cb) {
+
+                server7.pack.register(plugin7, function (err) {
+
+                    theTest(server7, err, cb);
+                });
+            },
+            Memory.teardown
+        ], playItem, done);
+
+    });
     
-    test('takes its models option as a path.', function (done) {
+    test('takes its models option as an absolute path.', function (done) {
         
         var options = {
             connections: connections,
