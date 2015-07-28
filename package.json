@@ -2,7 +2,7 @@
   "name": "dogwater",
   "version": "0.4.7",
   "description": "A hapi plugin integrating Waterline ORM.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/devinivy/dogwater"
