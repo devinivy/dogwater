@@ -1,8 +1,7 @@
 // Load modules
 var Lab = require('lab');
 var Code = require('code');
-var Hapi8 = require('hapi');
-var Hapi7 = require('hapi-v7');
+var Hapi = require('hapi');
 var Items = require('items');
 var Path = require('path');
 var Waterline = require('waterline');
@@ -12,6 +11,7 @@ var Memory = require('sails-memory');
 var lab = exports.lab = Lab.script();
 var expect = Code.expect;
 var beforeEach = lab.beforeEach;
+var afterEach = lab.afterEach;
 var experiment = lab.experiment;
 var test = lab.test;
 
@@ -19,8 +19,7 @@ var test = lab.test;
 experiment('Dogwater', function () {
 
     // This will be a hapi server for each test.
-    var server8;
-    var server7;
+    var server;
 
     // Setup dummy connections/adapters.
     var connections = {
@@ -42,19 +41,18 @@ experiment('Dogwater', function () {
     var modelsFile = './models.definition.js';
     var fixturesFile = './models.fixtures.json';
 
-    // For use with Items.serial
-    var playItem = function (item, done) {
-
-        item(done);
-    };
-
-    // Setup Hapi server to register the plugin
+    // Setup hapi server to register the plugin
     beforeEach(function (done) {
 
-        server8 = new Hapi8.Server();
-        server8.connection();
-        server7 = new Hapi7.Server();
+        server = new Hapi.Server();
+        server.connection();
         done();
+    });
+
+    // Setup Hapi server to register the plugin
+    afterEach(function (done) {
+
+        server.plugins.dogwater.teardown(done)
     });
 
     test('takes its models option as a path.', function (done) {
@@ -65,40 +63,16 @@ experiment('Dogwater', function () {
             models: Path.normalize(__dirname + '/' + modelsFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
-
-            expect(error).to.not.exist();
-            callback();
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+            expect(err).to.not.exist();
+            done();
+        });
 
     });
 
@@ -110,40 +84,16 @@ experiment('Dogwater', function () {
             models: Path.normalize(__dirname + '/' + modelsFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
-
-            expect(error).to.not.exist();
-            callback();
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+            expect(err).to.not.exist();
+            done();
+        });
 
     });
 
@@ -155,40 +105,16 @@ experiment('Dogwater', function () {
             models: require(modelsFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
-
-            expect(error).to.not.exist();
-            callback();
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+            expect(err).to.not.exist();
+            done();
+        });
 
     });
 
@@ -200,40 +126,16 @@ experiment('Dogwater', function () {
             models: { some: 'object' }
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
-
-            expect(error).to.exist();
-            callback();
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+            expect(err).to.exist();
+            done();
+        });
 
     });
 
@@ -248,45 +150,20 @@ experiment('Dogwater', function () {
             models: require(modelsFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
-
-        var theTest = function (server, error, callback) {
+        server.register(plugin, function (err) {
 
             var dogwater = server.plugins.dogwater;
 
-            expect(error).not.to.exist();
-            expect(dogwater.bar).to.be.an.object();
-            expect(dogwater.zoo).to.be.an.object();
-
-            callback();
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+            expect(err).not.to.exist();
+            expect(dogwater.collections.bar).to.be.an.object();
+            expect(dogwater.collections.zoo).to.be.an.object();
+            done();
+        });
 
     });
 
@@ -298,29 +175,24 @@ experiment('Dogwater', function () {
             models: require(modelsFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
-
-            expect(error).not.to.exist();
+            expect(err).not.to.exist();
 
             server.route({
                 path: '/',
                 method: 'GET',
                 handler: function (request, reply) {
 
-                    var dogwater = request.model;
+                    var collections = request.collections;
 
-                    expect(dogwater.bar).to.be.an.object();
-                    expect(dogwater.zoo).to.be.an.object();
+                    expect(collections.bar).to.be.an.object();
+                    expect(collections.zoo).to.be.an.object();
 
                     reply({});
                 }
@@ -328,28 +200,9 @@ experiment('Dogwater', function () {
 
             server.inject({ url: '/', method: 'GET' }, function (response) {
 
-                callback();
+                done();
             });
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+        });
 
     });
 
@@ -364,21 +217,16 @@ experiment('Dogwater', function () {
             }
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
+            expect(err).to.not.exist();
 
-            expect(error).to.not.exist();
-
-            var dogwater = server.plugins.dogwater;
+            var collections = server.plugins.dogwater.collections;
 
             dogwater.bar.find()
             .then(function (bars) {
@@ -389,32 +237,11 @@ experiment('Dogwater', function () {
                     expect(bars).to.have.length(2);
                     expect(zoos).to.have.length(1);
 
-                    callback();
-
+                    done();
                 });
 
             });
-
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+        });
 
     });
 
@@ -426,46 +253,17 @@ experiment('Dogwater', function () {
             models: require(modelsFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
-
-            expect(error).to.not.exist();
-
-            server.methods.getWaterline(function (err, waterline) {
-
-                expect(waterline).to.be.instanceof(Waterline);
-                callback();
-            });
-
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+            expect(err).to.not.exist();
+            expect(server.waterline).to.be.instanceof(Waterline);
+            done();
+        });
 
     });
 
@@ -477,22 +275,17 @@ experiment('Dogwater', function () {
             models: require(modelsFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
-
-        server8.register(plugin8, function (err) {
+        server.register(plugin, function (err) {
 
             expect(err).to.not.exist();
 
             // Fail by reusing adapter
-            server7.pack.register(plugin7, function (err) {
+            server.register(plugin, function (err) {
 
                 expect(err).to.exist();
                 done();

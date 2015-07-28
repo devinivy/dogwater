@@ -1,7 +1,7 @@
 {
   "name": "dogwater",
   "version": "0.4.7",
-  "description": "A hapi plugin integrating Waterline ORM.",
+  "description": "A hapi plugin integrating Waterline ORM",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
@@ -21,16 +21,16 @@
     "orm"
   ],
   "dependencies": {
-    "waterline": "^0.10.8",
+    "hoek": "~2.14.0",
+    "items": "~1.1.0",
+    "waterline": "^0.10.x",
     "waterline-fixtures": "^0.2.x"
   },
   "devDependencies": {
     "lab": "5.x.x",
     "code": "1.x.x",
     "coveralls": "2.x.x",
-    "hapi": "~8.x.x",
-    "hapi-v7": "git://github.com/devinivy/hapi-v7.git",
-    "items": "1.x.x",
+    "hapi": "8.x.x",
     "sails-memory": "0.10.x"
   },
   "scripts": {
