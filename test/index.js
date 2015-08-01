@@ -30,29 +30,46 @@ experiment('Dogwater', function () {
 
     var dummyAdapters = { foo: {} };
 
-    var failureAdapters = 666;
-
     // Pass adapters as string
     var stringsAdapters = { foo: 'sails-memory' };
 
-    // Setup adapters for testing fixtures.
+    // Setup adapters for testing fixtures
     var fixtureAdapters = { foo: Memory };
+
+    // Fail upon registering a connection
+    var failureAdapters = {
+        foo: {
+            registerConnection: function (one, two, cb) {
+
+                cb(new Error('Adapter test error!'));
+            }
+        }
+    };
 
     var modelsFile = './models.definition.js';
     var fixturesFile = './models.fixtures.json';
+
+    var performTeardown;
 
     // Setup hapi server to register the plugin
     beforeEach(function (done) {
 
         server = new Hapi.Server();
         server.connection();
+
+        performTeardown = true;
+
         done();
     });
 
-    // Setup Hapi server to register the plugin
+    // Teardown unless the test dictates otherwise
     afterEach(function (done) {
 
-        server.plugins.dogwater.teardown(done)
+        if (performTeardown) {
+            server.plugins.dogwater.teardown(done);
+        } else {
+            done();
+        }
     });
 
     test('takes its models option as a path.', function (done) {
@@ -127,16 +144,22 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
-        server.register(plugin, function (err) {
+        expect(function () {
 
-            expect(err).to.exist();
-            done();
-        });
+            server.register(plugin, function (err) {
 
+                // We should never get here
+                expect(true).to.not.equal(true);
+            });
+        }).to.throw('Model definitions need to be specified as an array or path to be required.');
+
+        performTeardown = false;
+
+        done();
     });
 
 
@@ -228,10 +251,10 @@ experiment('Dogwater', function () {
 
             var collections = server.plugins.dogwater.collections;
 
-            dogwater.bar.find()
+            collections.bar.find()
             .then(function (bars) {
 
-                dogwater.zoo.find()
+                collections.zoo.find()
                 .then(function (zoos) {
 
                     expect(bars).to.have.length(2);
@@ -271,7 +294,7 @@ experiment('Dogwater', function () {
 
         var options = {
             connections: connections,
-            adapters: fixtureAdapters,
+            adapters: failureAdapters,
             models: require(modelsFile)
         };
 
@@ -282,15 +305,12 @@ experiment('Dogwater', function () {
 
         server.register(plugin, function (err) {
 
-            expect(err).to.not.exist();
+            expect(err).to.exist();
+            expect(err.message).to.equal('Adapter test error!');
 
-            // Fail by reusing adapter
-            server.register(plugin, function (err) {
+            performTeardown = false;
 
-                expect(err).to.exist();
-                done();
-            });
-
+            done();
         });
 
     });
