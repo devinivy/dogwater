@@ -165,7 +165,7 @@ experiment('Dogwater', function () {
 
     });
 
-    test('takes its models option as an array.', function (done) {
+    test('takes its models option as an array of functions and objects.', function (done) {
 
         var options = {
             connections: connections,
@@ -186,7 +186,7 @@ experiment('Dogwater', function () {
 
     });
 
-    test('errors if the models option is not an array or string.', function (done) {
+    test('throws if the models option is not an array or string.', function (done) {
 
         var options = {
             connections: connections,
@@ -215,6 +215,7 @@ experiment('Dogwater', function () {
 
 
     test('exposes Waterline collections, connections, and schema.', function (done) {
+
         // Via model definitions, this verifies that a definition can be a function
         // to which waterline is passed and from which a definition is returned.
 
@@ -256,8 +257,6 @@ experiment('Dogwater', function () {
     });
 
     test('exposes connection teardown method, skips when method missing.', function (done) {
-        // Via model definitions, this verifies that a definition can be a function
-        // to which waterline is passed and from which a definition is returned.
 
         var options = {
             connections: connections,
@@ -279,6 +278,7 @@ experiment('Dogwater', function () {
             expect(toreDown).to.equal(false);
             teardown(function (err) {
 
+                expect(err).to.not.exist();
                 expect(toreDown).to.equal(false);
                 done();
             });
@@ -286,9 +286,7 @@ experiment('Dogwater', function () {
 
     });
 
-    test('exposes connection teardown method, skips when adapter identity missing.', function (done) {
-        // Via model definitions, this verifies that a definition can be a function
-        // to which waterline is passed and from which a definition is returned.
+    test('exposes connection teardown method, succeeds when adapter identity missing.', function (done) {
 
         var options = {
             connections: connections,
@@ -310,7 +308,8 @@ experiment('Dogwater', function () {
             expect(toreDown).to.equal(false);
             teardown(function (err) {
 
-                expect(toreDown).to.equal(false);
+                expect(err).to.not.exist();
+                expect(toreDown).to.equal(true);
                 done();
             });
         });
@@ -341,6 +340,7 @@ experiment('Dogwater', function () {
             expect(toreDown).to.equal(false);
             teardown(function (err) {
 
+                expect(err).to.not.exist();
                 expect(toreDown).to.equal(true);
                 done();
             });
