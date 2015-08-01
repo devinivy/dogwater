@@ -46,10 +46,39 @@ experiment('Dogwater', function () {
         }
     };
 
+    // Teardown tests
+    var teardownSuccessAdapters = {
+        foo: {
+            identity: 'foo',
+            teardown: function (cb) {
+
+                toreDown = true;
+                cb();
+            }
+        }
+    };
+
+    var teardownNoIdAdapters = {
+        foo: {
+            teardown: function (cb) {
+
+                toreDown = true;
+                cb();
+            }
+        }
+    };
+
+    var teardownNoMethodAdapters = {
+        foo: {
+            identity: 'foo'
+        }
+    };
+
     var modelsFile = './models.definition.js';
     var fixturesFile = './models.fixtures.json';
 
     var performTeardown;
+    var toreDown;
 
     // Setup hapi server to register the plugin
     beforeEach(function (done) {
@@ -58,6 +87,7 @@ experiment('Dogwater', function () {
         server.connection();
 
         performTeardown = true;
+        toreDown = false;
 
         done();
     });
@@ -163,7 +193,7 @@ experiment('Dogwater', function () {
     });
 
 
-    test('exposes Waterline collections to server.', function (done) {
+    test('exposes Waterline collections, connections, and schema.', function (done) {
         // Via model definitions, this verifies that a definition can be a function
         // to which waterline is passed and from which a definition is returned.
 
@@ -180,17 +210,125 @@ experiment('Dogwater', function () {
 
         server.register(plugin, function (err) {
 
-            var dogwater = server.plugins.dogwater;
-
             expect(err).not.to.exist();
-            expect(dogwater.collections.bar).to.be.an.object();
-            expect(dogwater.collections.zoo).to.be.an.object();
+
+            var collections = server.plugins.dogwater.collections;
+            var conns = server.plugins.dogwater.connections;
+            var schema = server.plugins.dogwater.schema;
+
+            expect(collections.bar).to.be.an.object();
+            expect(collections.zoo).to.be.an.object();
+
+            expect(conns).to.be.an.object();
+            expect(conns.my_foo).to.be.an.object();
+            expect(conns.my_foo._collections).to.once.include(['bar', 'zoo']);
+
+            expect(schema).to.be.an.object();
+            expect(schema.bar).to.be.an.object();
+            expect(schema.zoo).to.be.an.object();
+            expect(schema.bar.identity).to.equal('bar');
+            expect(schema.zoo.identity).to.equal('zoo');
+
             done();
         });
 
     });
 
-    test('exposes Waterline collections to request.', function (done) {
+    test('exposes connection teardown method, skips when method missing.', function (done) {
+        // Via model definitions, this verifies that a definition can be a function
+        // to which waterline is passed and from which a definition is returned.
+
+        var options = {
+            connections: connections,
+            adapters: teardownNoMethodAdapters,
+            models: require(modelsFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).not.to.exist();
+
+            var teardown = server.plugins.dogwater.teardown;
+
+            expect(toreDown).to.equal(false);
+            teardown(function (err) {
+
+                expect(toreDown).to.equal(false);
+                done();
+            });
+        });
+
+    });
+
+    test('exposes connection teardown method, skips when adapter identity missing.', function (done) {
+        // Via model definitions, this verifies that a definition can be a function
+        // to which waterline is passed and from which a definition is returned.
+
+        var options = {
+            connections: connections,
+            adapters: teardownNoIdAdapters,
+            models: require(modelsFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).not.to.exist();
+
+            var teardown = server.plugins.dogwater.teardown;
+
+            expect(toreDown).to.equal(false);
+            teardown(function (err) {
+
+                expect(toreDown).to.equal(false);
+                done();
+            });
+        });
+
+    });
+
+    test('exposes connection teardown method, succeeds with identity and method.', function (done) {
+        // Via model definitions, this verifies that a definition can be a function
+        // to which waterline is passed and from which a definition is returned.
+
+        var options = {
+            connections: connections,
+            adapters: teardownSuccessAdapters,
+            models: require(modelsFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).not.to.exist();
+
+            var teardown = server.plugins.dogwater.teardown;
+
+            expect(toreDown).to.equal(false);
+            teardown(function (err) {
+
+                expect(toreDown).to.equal(true);
+                done();
+            });
+        });
+
+    });
+
+
+    test('decorates Waterline collections onto request.', function (done) {
 
         var options = {
             connections: connections,
@@ -268,7 +406,7 @@ experiment('Dogwater', function () {
 
     });
 
-    test('exposes waterline through a server method.', function (done) {
+    test('decorates Waterline onto the server.', function (done) {
 
         var options = {
             connections: connections,
@@ -290,7 +428,7 @@ experiment('Dogwater', function () {
 
     });
 
-    test('errors on fail.', function (done) {
+    test('errors on Waterline failure.', function (done) {
 
         var options = {
             connections: connections,
