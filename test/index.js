@@ -102,7 +102,28 @@ experiment('Dogwater', function () {
         }
     });
 
-    test('takes its models option as a path.', function (done) {
+    test('takes its models option as a relative path.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: Path.normalize('./test/' + modelsFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).to.not.exist();
+            done();
+        });
+
+    });
+
+    test('takes its models option as an absolute path.', function (done) {
 
         var options = {
             connections: connections,
