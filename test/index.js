@@ -1,8 +1,7 @@
 // Load modules
 var Lab = require('lab');
 var Code = require('code');
-var Hapi8 = require('hapi');
-var Hapi7 = require('hapi-v7');
+var Hapi = require('hapi');
 var Items = require('items');
 var Path = require('path');
 var Waterline = require('waterline');
@@ -12,6 +11,7 @@ var Memory = require('sails-memory');
 var lab = exports.lab = Lab.script();
 var expect = Code.expect;
 var beforeEach = lab.beforeEach;
+var afterEach = lab.afterEach;
 var experiment = lab.experiment;
 var test = lab.test;
 
@@ -19,180 +19,175 @@ var test = lab.test;
 experiment('Dogwater', function () {
 
     // This will be a hapi server for each test.
-    var server8;
-    var server7;
+    var server;
 
     // Setup dummy connections/adapters.
     var connections = {
-        'my_foo': {
+        'myFoo': {
             adapter: 'foo'
         }
     };
 
     var dummyAdapters = { foo: {} };
 
-    var failureAdapters = 666;
-
     // Pass adapters as string
-    var stringsAdapters = { foo: 'sails-memory' };
+    var stringAdapters = { foo: 'sails-memory' };
 
-    // Setup adapters for testing fixtures.
+    // Setup adapters for testing fixtures
     var fixtureAdapters = { foo: Memory };
 
-    var modelsFile = './models.definition.js';
-    var fixturesFile = './models.fixtures.json';
+    // Fail upon registering a connection
+    var failureAdapters = {
+        foo: {
+            registerConnection: function (one, two, cb) {
 
-    // For use with Items.serial
-    var playItem = function (item, done) {
-
-        item(done);
+                cb(new Error('Adapter test error!'));
+            }
+        }
     };
 
-    // Setup Hapi server to register the plugin
+    // Teardown tests
+    var teardownSuccessAdapters = {
+        foo: {
+            identity: 'foo',
+            teardown: function (cb) {
+
+                toreDown = true;
+                cb();
+            }
+        }
+    };
+
+    var teardownNoIdAdapters = {
+        foo: {
+            teardown: function (cb) {
+
+                toreDown = true;
+                cb();
+            }
+        }
+    };
+
+    var teardownNoMethodAdapters = {
+        foo: {
+            identity: 'foo'
+        }
+    };
+
+    var modelsRawFile = './models.definition.raw.js';
+    var modelsFuncFile = './models.definition.funcs.js';
+    var fixturesFile = './models.fixtures.json';
+
+    var performTeardown;
+    var toreDown;
+
+    // Setup hapi server to register the plugin
     beforeEach(function (done) {
 
-        server8 = new Hapi8.Server();
-        server8.connection();
-        server7 = new Hapi7.Server();
+        server = new Hapi.Server();
+        server.connection();
+
+        performTeardown = true;
+        toreDown = false;
+
         done();
     });
 
-    test('takes its models option as a path.', function (done) {
+    // Teardown unless the test dictates otherwise
+    afterEach(function (done) {
+
+        if (performTeardown) {
+            server.plugins.dogwater.teardown(done);
+        } else {
+            done();
+        }
+    });
+
+    test('takes its `models` option as a relative path.', function (done) {
 
         var options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: Path.normalize(__dirname + '/' + modelsFile)
+            models: Path.normalize('./test/' + modelsRawFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
-
-            expect(error).to.not.exist();
-            callback();
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+            expect(err).to.not.exist();
+            done();
+        });
 
     });
 
-    test('takes its adapters option as a string.', function (done) {
-
-        var options = {
-            connections: connections,
-            adapters: stringsAdapters,
-            models: Path.normalize(__dirname + '/' + modelsFile)
-        };
-
-        var plugin8 = {
-           register: require('..'),
-           options: options
-        };
-
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
-
-        var theTest = function (server, error, callback) {
-
-            expect(error).to.not.exist();
-            callback();
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
-
-    });
-
-    test('takes its models option as an array.', function (done) {
+    test('takes its `models` option as an absolute path.', function (done) {
 
         var options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: Path.normalize(__dirname + '/' + modelsRawFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
-
-            expect(error).to.not.exist();
-            callback();
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+            expect(err).to.not.exist();
+            done();
+        });
 
     });
 
-    test('errors if the models option is not an array or string.', function (done) {
+    test('takes its `models` option as an array of objects.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: require(modelsRawFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).to.not.exist();
+            done();
+        });
+
+    });
+
+    test('takes its `models` option as an array of functions returning objects.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: require(modelsFuncFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).to.not.exist();
+            done();
+        });
+
+    });
+
+    test('throws if the `models` option is not an array or string.', function (done) {
 
         var options = {
             connections: connections,
@@ -200,127 +195,201 @@ experiment('Dogwater', function () {
             models: { some: 'object' }
         };
 
-        var plugin8 = {
+        var plugin = {
+            register: require('..'),
+            options: options
+        };
+
+        expect(function () {
+
+            server.register(plugin, function (err) {
+
+                // We should never get here
+                expect(true).to.not.equal(true);
+            });
+        }).to.throw('Model definitions need to be specified as an array or path to be required.');
+
+        performTeardown = false;
+
+        done();
+    });
+
+    test('takes its `adapters` specified as a string.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: stringAdapters,
+            models: Path.normalize(__dirname + '/' + modelsRawFile)
+        };
+
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
-
-            expect(error).to.exist();
-            callback();
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+            expect(err).to.not.exist();
+            done();
+        });
 
     });
 
-
-    test('exposes Waterline collections to server.', function (done) {
-        // Via model definitions, this verifies that a definition can be a function
-        // to which waterline is passed and from which a definition is returned.
+    test('exposes Waterline collections, connections, and schema.', function (done) {
 
         var options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: require(modelsRawFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
+            expect(err).not.to.exist();
 
-            var dogwater = server.plugins.dogwater;
+            var collections = server.plugins.dogwater.collections;
+            var conns = server.plugins.dogwater.connections;
+            var schema = server.plugins.dogwater.schema;
 
-            expect(error).not.to.exist();
-            expect(dogwater.bar).to.be.an.object();
-            expect(dogwater.zoo).to.be.an.object();
+            expect(collections.bar).to.be.an.object();
+            expect(collections.zoo).to.be.an.object();
 
-            callback();
-        };
+            expect(conns).to.be.an.object();
+            expect(conns.myFoo).to.be.an.object();
+            expect(conns.myFoo._collections).to.once.include(['bar', 'zoo']);
 
-        Items.serial([
-            function (cb) {
+            expect(schema).to.be.an.object();
+            expect(schema.bar).to.be.an.object();
+            expect(schema.zoo).to.be.an.object();
+            expect(schema.bar.identity).to.equal('bar');
+            expect(schema.zoo.identity).to.equal('zoo');
 
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+            done();
+        });
 
     });
 
-    test('exposes Waterline collections to request.', function (done) {
+    test('exposes connection teardown method, skips when method missing.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: teardownNoMethodAdapters,
+            models: require(modelsRawFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).not.to.exist();
+
+            var teardown = server.plugins.dogwater.teardown;
+
+            expect(toreDown).to.equal(false);
+            teardown(function (err) {
+
+                expect(err).to.not.exist();
+                expect(toreDown).to.equal(false);
+                done();
+            });
+        });
+
+    });
+
+    test('exposes connection teardown method, succeeds when adapter identity missing.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: teardownNoIdAdapters,
+            models: require(modelsRawFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).not.to.exist();
+
+            var teardown = server.plugins.dogwater.teardown;
+
+            expect(toreDown).to.equal(false);
+            teardown(function (err) {
+
+                expect(err).to.not.exist();
+                expect(toreDown).to.equal(true);
+                done();
+            });
+        });
+
+    });
+
+    test('exposes connection teardown method, succeeds with identity and method.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: teardownSuccessAdapters,
+            models: require(modelsRawFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).not.to.exist();
+
+            var teardown = server.plugins.dogwater.teardown;
+
+            expect(toreDown).to.equal(false);
+            teardown(function (err) {
+
+                expect(err).to.not.exist();
+                expect(toreDown).to.equal(true);
+                done();
+            });
+        });
+
+    });
+
+    test('decorates Waterline collections onto request.', function (done) {
 
         var options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: require(modelsRawFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
+        server.register(plugin, function (err) {
 
-        var theTest = function (server, error, callback) {
-
-            expect(error).not.to.exist();
+            expect(err).not.to.exist();
 
             server.route({
                 path: '/',
                 method: 'GET',
                 handler: function (request, reply) {
 
-                    var dogwater = request.model;
+                    var collections = request.collections;
 
-                    expect(dogwater.bar).to.be.an.object();
-                    expect(dogwater.zoo).to.be.an.object();
+                    expect(collections.bar).to.be.an.object();
+                    expect(collections.zoo).to.be.an.object();
 
                     reply({});
                 }
@@ -328,176 +397,160 @@ experiment('Dogwater', function () {
 
             server.inject({ url: '/', method: 'GET' }, function (response) {
 
-                callback();
+                done();
             });
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+        });
 
     });
 
-    test('loads fixtures using waterline-fixtures.', function (done) {
+    test('decorates Waterline onto the server.', function (done) {
 
         var options = {
             connections: connections,
-            adapters: fixtureAdapters,
-            models: require(modelsFile),
-            data: {
-                fixtures: require(fixturesFile)
-            }
+            adapters: dummyAdapters,
+            models: require(modelsRawFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
+        server.register(plugin, function (err) {
+
+            expect(err).to.not.exist();
+            expect(server.waterline).to.be.instanceof(Waterline);
+            done();
+        });
+
+    });
+
+    test('exposes the raw ORM to the model definition when the definition is specified as a function.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: require(modelsFuncFile)
+        };
+
+        var plugin = {
+           register: require('..'),
            options: options
         };
 
-        var theTest = function (server, error, callback) {
+        server.register(plugin, function (err) {
 
-            expect(error).to.not.exist();
+            expect(err).to.not.exist();
 
-            var dogwater = server.plugins.dogwater;
+            var Bar = server.waterline.collections.bar;
+            var Zoo = server.waterline.collections.zoo;
 
-            dogwater.bar.find()
+            expect(Bar).to.be.an.object();
+            expect(Zoo).to.be.an.object();
+            expect(Bar.iHaveWaterline()).to.equal(server.waterline);
+            expect(Zoo.iHaveWaterline()).to.equal(server.waterline);
+            done();
+        });
+
+    });
+
+    test('loads fixtures using waterline-fixtures with a standard object configuration.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: fixtureAdapters,
+            models: require(modelsRawFile),
+            fixtures: {
+                fixtures: require(fixturesFile)
+            }
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).to.not.exist();
+
+            var collections = server.plugins.dogwater.collections;
+
+            collections.bar.find()
             .then(function (bars) {
 
-                dogwater.zoo.find()
+                collections.zoo.find()
                 .then(function (zoos) {
 
                     expect(bars).to.have.length(2);
                     expect(zoos).to.have.length(1);
 
-                    callback();
-
+                    done();
                 });
 
             });
-
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
+        });
 
     });
 
-    test('exposes waterline through a server method.', function (done) {
-
-        var options = {
-            connections: connections,
-            adapters: dummyAdapters,
-            models: require(modelsFile)
-        };
-
-        var plugin8 = {
-           register: require('..'),
-           options: options
-        };
-
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
-
-        var theTest = function (server, error, callback) {
-
-            expect(error).to.not.exist();
-
-            server.methods.getWaterline(function (err, waterline) {
-
-                expect(waterline).to.be.instanceof(Waterline);
-                callback();
-            });
-
-        };
-
-        Items.serial([
-            function (cb) {
-
-                server8.register(plugin8, function (err) {
-
-                    theTest(server8, err, cb);
-                });
-            },
-            Memory.teardown,
-            function (cb) {
-
-                server7.pack.register(plugin7, function (err) {
-
-                    theTest(server7, err, cb);
-                });
-            },
-            Memory.teardown
-        ], playItem, done);
-
-    });
-
-    test('errors on fail.', function (done) {
+    test('loads fixtures using waterline-fixtures with fixture data directly specified.', function (done) {
 
         var options = {
             connections: connections,
             adapters: fixtureAdapters,
-            models: require(modelsFile)
+            models: require(modelsRawFile),
+            fixtures: require(fixturesFile)
         };
 
-        var plugin8 = {
+        var plugin = {
            register: require('..'),
            options: options
         };
 
-        var plugin7 = {
-           plugin: require('..'),
-           options: options
-        };
-
-        server8.register(plugin8, function (err) {
+        server.register(plugin, function (err) {
 
             expect(err).to.not.exist();
 
-            // Fail by reusing adapter
-            server7.pack.register(plugin7, function (err) {
+            var collections = server.plugins.dogwater.collections;
 
-                expect(err).to.exist();
-                done();
+            collections.bar.find()
+            .then(function (bars) {
+
+                collections.zoo.find()
+                .then(function (zoos) {
+
+                    expect(bars).to.have.length(2);
+                    expect(zoos).to.have.length(1);
+
+                    done();
+                });
+
             });
+        });
 
+    });
+
+    test('errors on Waterline failure.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: failureAdapters,
+            models: require(modelsRawFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).to.exist();
+            expect(err.message).to.equal('Adapter test error!');
+
+            performTeardown = false;
+
+            done();
         });
 
     });
