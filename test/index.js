@@ -23,7 +23,7 @@ experiment('Dogwater', function () {
 
     // Setup dummy connections/adapters.
     var connections = {
-        'my_foo': {
+        'myFoo': {
             adapter: 'foo'
         }
     };
@@ -31,7 +31,7 @@ experiment('Dogwater', function () {
     var dummyAdapters = { foo: {} };
 
     // Pass adapters as string
-    var stringsAdapters = { foo: 'sails-memory' };
+    var stringAdapters = { foo: 'sails-memory' };
 
     // Setup adapters for testing fixtures
     var fixtureAdapters = { foo: Memory };
@@ -74,7 +74,8 @@ experiment('Dogwater', function () {
         }
     };
 
-    var modelsFile = './models.definition.js';
+    var modelsRawFile = './models.definition.raw.js';
+    var modelsFuncFile = './models.definition.funcs.js';
     var fixturesFile = './models.fixtures.json';
 
     var performTeardown;
@@ -102,12 +103,12 @@ experiment('Dogwater', function () {
         }
     });
 
-    test('takes its models option as a relative path.', function (done) {
+    test('takes its `models` option as a relative path.', function (done) {
 
         var options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: Path.normalize('./test/' + modelsFile)
+            models: Path.normalize('./test/' + modelsRawFile)
         };
 
         var plugin = {
@@ -123,12 +124,12 @@ experiment('Dogwater', function () {
 
     });
 
-    test('takes its models option as an absolute path.', function (done) {
+    test('takes its `models` option as an absolute path.', function (done) {
 
         var options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: Path.normalize(__dirname + '/' + modelsFile)
+            models: Path.normalize(__dirname + '/' + modelsRawFile)
         };
 
         var plugin = {
@@ -144,33 +145,12 @@ experiment('Dogwater', function () {
 
     });
 
-    test('takes its adapters option as a string.', function (done) {
-
-        var options = {
-            connections: connections,
-            adapters: stringsAdapters,
-            models: Path.normalize(__dirname + '/' + modelsFile)
-        };
-
-        var plugin = {
-           register: require('..'),
-           options: options
-        };
-
-        server.register(plugin, function (err) {
-
-            expect(err).to.not.exist();
-            done();
-        });
-
-    });
-
-    test('takes its models option as an array of functions and objects.', function (done) {
+    test('takes its `models` option as an array of objects.', function (done) {
 
         var options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: require(modelsRawFile)
         };
 
         var plugin = {
@@ -186,7 +166,28 @@ experiment('Dogwater', function () {
 
     });
 
-    test('throws if the models option is not an array or string.', function (done) {
+    test('takes its `models` option as an array of functions returning objects.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: require(modelsFuncFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).to.not.exist();
+            done();
+        });
+
+    });
+
+    test('throws if the `models` option is not an array or string.', function (done) {
 
         var options = {
             connections: connections,
@@ -213,16 +214,33 @@ experiment('Dogwater', function () {
         done();
     });
 
+    test('takes its `adapters` specified as a string.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: stringAdapters,
+            models: Path.normalize(__dirname + '/' + modelsRawFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).to.not.exist();
+            done();
+        });
+
+    });
 
     test('exposes Waterline collections, connections, and schema.', function (done) {
-
-        // Via model definitions, this verifies that a definition can be a function
-        // to which waterline is passed and from which a definition is returned.
 
         var options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: require(modelsRawFile)
         };
 
         var plugin = {
@@ -242,8 +260,8 @@ experiment('Dogwater', function () {
             expect(collections.zoo).to.be.an.object();
 
             expect(conns).to.be.an.object();
-            expect(conns.my_foo).to.be.an.object();
-            expect(conns.my_foo._collections).to.once.include(['bar', 'zoo']);
+            expect(conns.myFoo).to.be.an.object();
+            expect(conns.myFoo._collections).to.once.include(['bar', 'zoo']);
 
             expect(schema).to.be.an.object();
             expect(schema.bar).to.be.an.object();
@@ -261,7 +279,7 @@ experiment('Dogwater', function () {
         var options = {
             connections: connections,
             adapters: teardownNoMethodAdapters,
-            models: require(modelsFile)
+            models: require(modelsRawFile)
         };
 
         var plugin = {
@@ -291,7 +309,7 @@ experiment('Dogwater', function () {
         var options = {
             connections: connections,
             adapters: teardownNoIdAdapters,
-            models: require(modelsFile)
+            models: require(modelsRawFile)
         };
 
         var plugin = {
@@ -317,13 +335,11 @@ experiment('Dogwater', function () {
     });
 
     test('exposes connection teardown method, succeeds with identity and method.', function (done) {
-        // Via model definitions, this verifies that a definition can be a function
-        // to which waterline is passed and from which a definition is returned.
 
         var options = {
             connections: connections,
             adapters: teardownSuccessAdapters,
-            models: require(modelsFile)
+            models: require(modelsRawFile)
         };
 
         var plugin = {
@@ -348,13 +364,12 @@ experiment('Dogwater', function () {
 
     });
 
-
     test('decorates Waterline collections onto request.', function (done) {
 
         var options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: require(modelsRawFile)
         };
 
         var plugin = {
@@ -388,12 +403,63 @@ experiment('Dogwater', function () {
 
     });
 
+    test('decorates Waterline onto the server.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: require(modelsRawFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).to.not.exist();
+            expect(server.waterline).to.be.instanceof(Waterline);
+            done();
+        });
+
+    });
+
+    test('exposes the raw ORM to the model definition when the definition is specified as a function.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: require(modelsFuncFile)
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).to.not.exist();
+
+            var Bar = server.waterline.collections.bar;
+            var Zoo = server.waterline.collections.zoo;
+
+            expect(Bar).to.be.an.object();
+            expect(Zoo).to.be.an.object();
+            expect(Bar.iHaveWaterline()).to.equal(server.waterline);
+            expect(Zoo.iHaveWaterline()).to.equal(server.waterline);
+            done();
+        });
+
+    });
+
     test('loads fixtures using waterline-fixtures.', function (done) {
 
         var options = {
             connections: connections,
             adapters: fixtureAdapters,
-            models: require(modelsFile),
+            models: require(modelsRawFile),
             data: {
                 fixtures: require(fixturesFile)
             }
@@ -427,34 +493,12 @@ experiment('Dogwater', function () {
 
     });
 
-    test('decorates Waterline onto the server.', function (done) {
-
-        var options = {
-            connections: connections,
-            adapters: dummyAdapters,
-            models: require(modelsFile)
-        };
-
-        var plugin = {
-           register: require('..'),
-           options: options
-        };
-
-        server.register(plugin, function (err) {
-
-            expect(err).to.not.exist();
-            expect(server.waterline).to.be.instanceof(Waterline);
-            done();
-        });
-
-    });
-
     test('errors on Waterline failure.', function (done) {
 
         var options = {
             connections: connections,
             adapters: failureAdapters,
-            models: require(modelsFile)
+            models: require(modelsRawFile)
         };
 
         var plugin = {
