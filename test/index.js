@@ -454,15 +454,52 @@ experiment('Dogwater', function () {
 
     });
 
-    test('loads fixtures using waterline-fixtures.', function (done) {
+    test('loads fixtures using waterline-fixtures with a standard object configuration.', function (done) {
 
         var options = {
             connections: connections,
             adapters: fixtureAdapters,
             models: require(modelsRawFile),
-            data: {
+            fixtures: {
                 fixtures: require(fixturesFile)
             }
+        };
+
+        var plugin = {
+           register: require('..'),
+           options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).to.not.exist();
+
+            var collections = server.plugins.dogwater.collections;
+
+            collections.bar.find()
+            .then(function (bars) {
+
+                collections.zoo.find()
+                .then(function (zoos) {
+
+                    expect(bars).to.have.length(2);
+                    expect(zoos).to.have.length(1);
+
+                    done();
+                });
+
+            });
+        });
+
+    });
+
+    test('loads fixtures using waterline-fixtures with fixture data directly specified.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: fixtureAdapters,
+            models: require(modelsRawFile),
+            fixtures: require(fixturesFile)
         };
 
         var plugin = {
