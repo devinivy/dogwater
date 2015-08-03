@@ -1,8 +1,10 @@
 ![dogwater](http://i.imgur.com/FPjWX9s.png)
 
-A [hapi](https://github.com/hapijs/hapi) plugin integrating [Waterline ORM](https://github.com/balderdashy/waterline).
+A [hapi](https://github.com/hapijs/hapi) plugin integrating [Waterline ORM](https://github.com/balderdashy/waterline)
 
 [![Build Status](https://travis-ci.org/devinivy/dogwater.svg?branch=master)](https://travis-ci.org/devinivy/dogwater) [![Coverage Status](http://coveralls.io/repos/devinivy/dogwater/badge.svg?branch=master&service=github)](http://coveralls.io/github/devinivy/dogwater?branch=master)
+
+[*v1.0.0 release notes*](https://github.com/devinivy/dogwater/issues/25)
 
 ## Usage
 ```node
