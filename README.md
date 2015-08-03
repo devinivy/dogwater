@@ -41,18 +41,16 @@ server.register({
                 attributes: { name: 'string' }
             }
         ],
-        data: {
-            fixtures: [
-                {
-                    model: 'dogs',
-                    items: [
-                        { name: 'Guinness' },
-                        { name: 'Sully' },
-                        { name: 'Ren' }
-                    ]
-                }
-            ],
-        }
+        fixtures: [
+            {
+                model: 'dogs',
+                items: [
+                    { name: 'Guinness' },
+                    { name: 'Sully' },
+                    { name: 'Ren' }
+                ]
+            }
+        ],
     }
 }, function (err) {
 
@@ -80,10 +78,10 @@ server.register({
  - `server.plugins.dogwater.teardown(cb)` - a method to teardown all Waterline-managed connections, `cb` taking a single error argument.
 
 ### Options
- - `adapters` - An object whose keys are adapter names (to be referenced in the `connections` option), and whose values are [Waterline adapter modules](https://github.com/balderdashy/waterline-docs/blob/master/README.md#supported-adapters) or string names of adapter modules to be `require`d. 
+ - `adapters` - An object whose keys are adapter names (to be referenced in the `connections` option), and whose values are [Waterline adapter modules](https://github.com/balderdashy/waterline-docs/blob/master/README.md#supported-adapters) or string names of adapter modules to be `require`d.
  - `connections` - A object containing a [Waterline connections configuration](http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.connections.html).  Each key should be a connection name, and each value should be an object specifying the relevant adapter's name plus any adapter connection configurations.
  - `models` - Either a relative (to the current working directory) or absolute path to be `require`d that will return an array of [unextended Waterline collections](https://github.com/balderdashy/waterline-docs/blob/master/models/models.md#how-to-define-a-model), or an array of unextended Waterline collections.  If a function is an element of this array, it will be called with the raw Waterline ORM object as an argument.  It is expected to return an unextended Waterline collection.  This allows one to easily reference Waterline in lifecycle callbacks.
- - `data` - An (optional) object containing the configuration used by [waterline-fixtures](https://github.com/devinivy/waterline-fixtures) to load data fixtures, with the exception of the `collections` option, which is automatically set by dogwater.
+ - `fixtures` - An optional object containing the configuration used by [waterline-fixtures](https://github.com/devinivy/waterline-fixtures) to load data fixtures, with the exception of its `collections` option, which is automatically set by dogwater.  Alternately, this option may specify an array of fixture data in the format prescribed by waterline-fixtures (which can be seen in the usage example above).
 
 Dogwater's options aim to be friendly with [rejoice](https://github.com/hapijs/rejoice) manifests.
 
