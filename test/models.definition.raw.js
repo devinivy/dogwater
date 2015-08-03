@@ -1,0 +1,18 @@
+module.exports = [
+    {
+        identity: 'bar',
+        connection: 'myFoo',
+
+        attributes: {
+            doo: 'string'
+        }
+    },
+    {
+        identity: 'zoo',
+        connection: 'myFoo',
+
+        attributes: {
+            ding: 'float'
+        }
+    }
+];
