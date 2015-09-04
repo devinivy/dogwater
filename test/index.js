@@ -112,8 +112,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -133,8 +133,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -154,8 +154,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -175,8 +175,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -223,8 +223,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -244,8 +244,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -283,8 +283,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -313,8 +313,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -343,8 +343,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -373,8 +373,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -412,8 +412,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -434,8 +434,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -466,8 +466,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -503,8 +503,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
@@ -539,8 +539,8 @@ experiment('Dogwater', function () {
         };
 
         var plugin = {
-           register: require('..'),
-           options: options
+            register: require('..'),
+            options: options
         };
 
         server.register(plugin, function (err) {
