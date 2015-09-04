@@ -22,7 +22,7 @@ server.route({
 
         var Dogs = request.collections.dogs;
 
-        // reply with promise
+        // Reply with promise
         reply(Dogs.findOne(request.params.id));
     }
 });
