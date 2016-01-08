@@ -5,6 +5,7 @@ module.exports = [
         return {
             identity: 'bar',
             connection: 'myFoo',
+            migrate: 'create',
 
             attributes: {
                 doo: 'string'

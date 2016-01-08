@@ -2,7 +2,6 @@
 var Lab = require('lab');
 var Code = require('code');
 var Hapi = require('hapi');
-var Items = require('items');
 var Path = require('path');
 var Waterline = require('waterline');
 var Memory = require('sails-memory');
@@ -110,7 +109,6 @@ experiment('Dogwater', function () {
         var options = {
             connections: connections,
             adapters: dummyAdapters,
-            defaults: defaults,
             models: Path.normalize('./test/' + modelsRawFile)
         };
 
@@ -271,6 +269,33 @@ experiment('Dogwater', function () {
             expect(schema.zoo).to.be.an.object();
             expect(schema.bar.identity).to.equal('bar');
             expect(schema.zoo.identity).to.equal('zoo');
+
+            done();
+        });
+
+    });
+
+    test('passes its `defaults` option to waterline.', function (done) {
+
+        var options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: require(modelsRawFile),
+            defaults: defaults
+        };
+
+        var plugin = {
+            register: require('..'),
+            options: options
+        };
+
+        server.register(plugin, function (err) {
+
+            expect(err).to.not.exist();
+
+            var collections = server.plugins.dogwater.collections;
+            expect(collections.bar.migrate).to.equal('create');
+            expect(collections.zoo.migrate).to.equal('safe');
 
             done();
         });
