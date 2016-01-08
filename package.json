@@ -27,7 +27,7 @@
     "waterline-fixtures": "^0.2.x"
   },
   "devDependencies": {
-    "lab": "5.x.x",
+    "lab": "6.x.x",
     "code": "1.x.x",
     "coveralls": "2.x.x",
     "hapi": "8.x.x",
