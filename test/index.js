@@ -30,6 +30,8 @@ experiment('Dogwater', function () {
 
     var dummyAdapters = { foo: {} };
 
+    var defaults = { migrate: 'safe' };
+
     // Pass adapters as string
     var stringAdapters = { foo: 'sails-memory' };
 
@@ -108,6 +110,7 @@ experiment('Dogwater', function () {
         var options = {
             connections: connections,
             adapters: dummyAdapters,
+            defaults: defaults,
             models: Path.normalize('./test/' + modelsRawFile)
         };
 
