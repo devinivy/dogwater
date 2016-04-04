@@ -1,3 +1,5 @@
+'use strict';
+
 // Can pass waterline to model definition
 module.exports = [
     function (waterline) {

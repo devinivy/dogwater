@@ -1,46 +1,45 @@
+'use strict';
+
 // Load modules
-var Lab = require('lab');
-var Code = require('code');
-var Hapi = require('hapi');
-var Path = require('path');
-var Waterline = require('waterline');
-var Memory = require('sails-memory');
+
+const Lab = require('lab');
+const Code = require('code');
+const Hapi = require('hapi');
+const Path = require('path');
+const Waterline = require('waterline');
 
 // Test shortcuts
-var lab = exports.lab = Lab.script();
-var expect = Code.expect;
-var beforeEach = lab.beforeEach;
-var afterEach = lab.afterEach;
-var experiment = lab.experiment;
-var test = lab.test;
 
+const lab = exports.lab = Lab.script();
+const expect = Code.expect;
+const beforeEach = lab.beforeEach;
+const afterEach = lab.afterEach;
+const experiment = lab.experiment;
+const test = lab.test;
 
-experiment('Dogwater', function () {
+experiment('Dogwater', () => {
 
     // This will be a hapi server for each test.
-    var server;
+    let server;
 
     // Setup dummy connections/adapters.
-    var connections = {
+    const connections = {
         'myFoo': {
             adapter: 'foo'
         }
     };
 
-    var dummyAdapters = { foo: {} };
+    const dummyAdapters = { foo: {} };
 
-    var defaults = { migrate: 'safe' };
+    const defaults = { migrate: 'safe' };
 
     // Pass adapters as string
-    var stringAdapters = { foo: 'sails-memory' };
-
-    // Setup adapters for testing fixtures
-    var fixtureAdapters = { foo: Memory };
+    const stringAdapters = { foo: 'sails-memory' };
 
     // Fail upon registering a connection
-    var failureAdapters = {
+    const failureAdapters = {
         foo: {
-            registerConnection: function (one, two, cb) {
+            registerConnection: (one, two, cb) => {
 
                 cb(new Error('Adapter test error!'));
             }
@@ -48,10 +47,10 @@ experiment('Dogwater', function () {
     };
 
     // Teardown tests
-    var teardownSuccessAdapters = {
+    const teardownSuccessAdapters = {
         foo: {
             identity: 'foo',
-            teardown: function (cb) {
+            teardown: (cb) => {
 
                 toreDown = true;
                 cb();
@@ -59,9 +58,9 @@ experiment('Dogwater', function () {
         }
     };
 
-    var teardownNoIdAdapters = {
+    const teardownNoIdAdapters = {
         foo: {
-            teardown: function (cb) {
+            teardown: (cb) => {
 
                 toreDown = true;
                 cb();
@@ -69,21 +68,20 @@ experiment('Dogwater', function () {
         }
     };
 
-    var teardownNoMethodAdapters = {
+    const teardownNoMethodAdapters = {
         foo: {
             identity: 'foo'
         }
     };
 
-    var modelsRawFile = './models.definition.raw.js';
-    var modelsFuncFile = './models.definition.funcs.js';
-    var fixturesFile = './models.fixtures.json';
+    const modelsRawFile = './models.definition.raw.js';
+    const modelsFuncFile = './models.definition.funcs.js';
 
-    var performTeardown;
-    var toreDown;
+    let performTeardown;
+    let toreDown;
 
     // Setup hapi server to register the plugin
-    beforeEach(function (done) {
+    beforeEach((done) => {
 
         server = new Hapi.Server();
         server.connection();
@@ -95,29 +93,30 @@ experiment('Dogwater', function () {
     });
 
     // Teardown unless the test dictates otherwise
-    afterEach(function (done) {
+    afterEach((done) => {
 
         if (performTeardown) {
             server.plugins.dogwater.teardown(done);
-        } else {
+        }
+        else {
             done();
         }
     });
 
-    test('takes its `models` option as a relative path.', function (done) {
+    test('takes its `models` option as a relative path.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: dummyAdapters,
             models: Path.normalize('./test/' + modelsRawFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
             done();
@@ -125,20 +124,20 @@ experiment('Dogwater', function () {
 
     });
 
-    test('takes its `models` option as an absolute path.', function (done) {
+    test('takes its `models` option as an absolute path.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: dummyAdapters,
             models: Path.normalize(__dirname + '/' + modelsRawFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
             done();
@@ -146,20 +145,20 @@ experiment('Dogwater', function () {
 
     });
 
-    test('takes its `models` option as an array of objects.', function (done) {
+    test('takes its `models` option as an array of objects.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: dummyAdapters,
             models: require(modelsRawFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
             done();
@@ -167,20 +166,20 @@ experiment('Dogwater', function () {
 
     });
 
-    test('takes its `models` option as an array of functions returning objects.', function (done) {
+    test('takes its `models` option as an array of functions returning objects.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: dummyAdapters,
             models: require(modelsFuncFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
             done();
@@ -188,22 +187,24 @@ experiment('Dogwater', function () {
 
     });
 
-    test('throws if the `models` option is not an array or string.', function (done) {
+    test('throws if the `models` option is not an array or string.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: dummyAdapters,
             models: { some: 'object' }
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        expect(function () {
+        expect(() => {
 
-            server.register(plugin, function (err) {
+            server.register(plugin, (err) => {
+
+                expect(err).to.not.exist();
 
                 // We should never get here
                 expect(true).to.not.equal(true);
@@ -215,20 +216,20 @@ experiment('Dogwater', function () {
         done();
     });
 
-    test('takes its `adapters` specified as a string.', function (done) {
+    test('takes its `adapters` specified as a string.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: stringAdapters,
             models: Path.normalize(__dirname + '/' + modelsRawFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
             done();
@@ -236,26 +237,26 @@ experiment('Dogwater', function () {
 
     });
 
-    test('exposes Waterline collections, connections, and schema.', function (done) {
+    test('exposes Waterline collections, connections, and schema.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: dummyAdapters,
             models: require(modelsRawFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).not.to.exist();
 
-            var collections = server.plugins.dogwater.collections;
-            var conns = server.plugins.dogwater.connections;
-            var schema = server.plugins.dogwater.schema;
+            const collections = server.plugins.dogwater.collections;
+            const conns = server.plugins.dogwater.connections;
+            const schema = server.plugins.dogwater.schema;
 
             expect(collections.bar).to.be.an.object();
             expect(collections.zoo).to.be.an.object();
@@ -275,25 +276,25 @@ experiment('Dogwater', function () {
 
     });
 
-    test('passes its `defaults` option to waterline.', function (done) {
+    test('passes its `defaults` option to waterline.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: dummyAdapters,
             models: require(modelsRawFile),
             defaults: defaults
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
 
-            var collections = server.plugins.dogwater.collections;
+            const collections = server.plugins.dogwater.collections;
             expect(collections.bar.migrate).to.equal('create');
             expect(collections.zoo.migrate).to.equal('safe');
 
@@ -302,27 +303,27 @@ experiment('Dogwater', function () {
 
     });
 
-    test('exposes connection teardown method, skips when method missing.', function (done) {
+    test('exposes connection teardown method, skips when method missing.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: teardownNoMethodAdapters,
             models: require(modelsRawFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).not.to.exist();
 
-            var teardown = server.plugins.dogwater.teardown;
+            const teardown = server.plugins.dogwater.teardown;
 
             expect(toreDown).to.equal(false);
-            teardown(function (err) {
+            teardown((err) => {
 
                 expect(err).to.not.exist();
                 expect(toreDown).to.equal(false);
@@ -332,27 +333,27 @@ experiment('Dogwater', function () {
 
     });
 
-    test('exposes connection teardown method, succeeds when adapter identity missing.', function (done) {
+    test('exposes connection teardown method, succeeds when adapter identity missing.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: teardownNoIdAdapters,
             models: require(modelsRawFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).not.to.exist();
 
-            var teardown = server.plugins.dogwater.teardown;
+            const teardown = server.plugins.dogwater.teardown;
 
             expect(toreDown).to.equal(false);
-            teardown(function (err) {
+            teardown((err) => {
 
                 expect(err).to.not.exist();
                 expect(toreDown).to.equal(true);
@@ -362,27 +363,27 @@ experiment('Dogwater', function () {
 
     });
 
-    test('exposes connection teardown method, succeeds with identity and method.', function (done) {
+    test('exposes connection teardown method, succeeds with identity and method.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: teardownSuccessAdapters,
             models: require(modelsRawFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).not.to.exist();
 
-            var teardown = server.plugins.dogwater.teardown;
+            const teardown = server.plugins.dogwater.teardown;
 
             expect(toreDown).to.equal(false);
-            teardown(function (err) {
+            teardown((err) => {
 
                 expect(err).to.not.exist();
                 expect(toreDown).to.equal(true);
@@ -392,29 +393,29 @@ experiment('Dogwater', function () {
 
     });
 
-    test('decorates Waterline collections onto request.', function (done) {
+    test('decorates Waterline collections onto request.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: dummyAdapters,
             models: require(modelsRawFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).not.to.exist();
 
             server.route({
                 path: '/',
                 method: 'GET',
-                handler: function (request, reply) {
+                handler: (request, reply) => {
 
-                    var collections = request.collections;
+                    const collections = request.collections;
 
                     expect(collections.bar).to.be.an.object();
                     expect(collections.zoo).to.be.an.object();
@@ -423,7 +424,7 @@ experiment('Dogwater', function () {
                 }
             });
 
-            server.inject({ url: '/', method: 'GET' }, function (response) {
+            server.inject({ url: '/', method: 'GET' }, (response) => {
 
                 done();
             });
@@ -431,20 +432,20 @@ experiment('Dogwater', function () {
 
     });
 
-    test('decorates Waterline onto the server.', function (done) {
+    test('decorates Waterline onto the server.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: dummyAdapters,
             models: require(modelsRawFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
             expect(server.waterline).to.be.instanceof(Waterline);
@@ -453,25 +454,25 @@ experiment('Dogwater', function () {
 
     });
 
-    test('exposes the raw ORM to the model definition when the definition is specified as a function.', function (done) {
+    test('exposes the raw ORM to the model definition when the definition is specified as a function.', (done) => {
 
-        var options = {
+        const options = {
             connections: connections,
             adapters: dummyAdapters,
             models: require(modelsFuncFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
 
-            var Bar = server.waterline.collections.bar;
-            var Zoo = server.waterline.collections.zoo;
+            const Bar = server.waterline.collections.bar;
+            const Zoo = server.waterline.collections.zoo;
 
             expect(Bar).to.be.an.object();
             expect(Zoo).to.be.an.object();
@@ -482,96 +483,20 @@ experiment('Dogwater', function () {
 
     });
 
-    test('loads fixtures using waterline-fixtures with a standard object configuration.', function (done) {
+    test('errors on Waterline failure.', (done) => {
 
-        var options = {
-            connections: connections,
-            adapters: fixtureAdapters,
-            models: require(modelsRawFile),
-            fixtures: {
-                fixtures: require(fixturesFile)
-            }
-        };
-
-        var plugin = {
-            register: require('..'),
-            options: options
-        };
-
-        server.register(plugin, function (err) {
-
-            expect(err).to.not.exist();
-
-            var collections = server.plugins.dogwater.collections;
-
-            collections.bar.find()
-            .then(function (bars) {
-
-                collections.zoo.find()
-                .then(function (zoos) {
-
-                    expect(bars).to.have.length(2);
-                    expect(zoos).to.have.length(1);
-
-                    done();
-                });
-
-            });
-        });
-
-    });
-
-    test('loads fixtures using waterline-fixtures with fixture data directly specified.', function (done) {
-
-        var options = {
-            connections: connections,
-            adapters: fixtureAdapters,
-            models: require(modelsRawFile),
-            fixtures: require(fixturesFile)
-        };
-
-        var plugin = {
-            register: require('..'),
-            options: options
-        };
-
-        server.register(plugin, function (err) {
-
-            expect(err).to.not.exist();
-
-            var collections = server.plugins.dogwater.collections;
-
-            collections.bar.find()
-            .then(function (bars) {
-
-                collections.zoo.find()
-                .then(function (zoos) {
-
-                    expect(bars).to.have.length(2);
-                    expect(zoos).to.have.length(1);
-
-                    done();
-                });
-
-            });
-        });
-
-    });
-
-    test('errors on Waterline failure.', function (done) {
-
-        var options = {
+        const options = {
             connections: connections,
             adapters: failureAdapters,
             models: require(modelsRawFile)
         };
 
-        var plugin = {
+        const plugin = {
             register: require('..'),
             options: options
         };
 
-        server.register(plugin, function (err) {
+        server.register(plugin, (err) => {
 
             expect(err).to.exist();
             expect(err.message).to.equal('Adapter test error!');
