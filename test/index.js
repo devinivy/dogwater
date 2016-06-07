@@ -75,7 +75,6 @@ experiment('Dogwater', () => {
     };
 
     const modelsRawFile = './models.definition.raw.js';
-    const modelsFuncFile = './models.definition.funcs.js';
 
     let performTeardown;
     let toreDown;
@@ -151,27 +150,6 @@ experiment('Dogwater', () => {
             connections: connections,
             adapters: dummyAdapters,
             models: require(modelsRawFile)
-        };
-
-        const plugin = {
-            register: require('..'),
-            options: options
-        };
-
-        server.register(plugin, (err) => {
-
-            expect(err).to.not.exist();
-            done();
-        });
-
-    });
-
-    test('takes its `models` option as an array of functions returning objects.', (done) => {
-
-        const options = {
-            connections: connections,
-            adapters: dummyAdapters,
-            models: require(modelsFuncFile)
         };
 
         const plugin = {
@@ -449,35 +427,6 @@ experiment('Dogwater', () => {
 
             expect(err).to.not.exist();
             expect(server.waterline).to.be.instanceof(Waterline);
-            done();
-        });
-
-    });
-
-    test('exposes the raw ORM to the model definition when the definition is specified as a function.', (done) => {
-
-        const options = {
-            connections: connections,
-            adapters: dummyAdapters,
-            models: require(modelsFuncFile)
-        };
-
-        const plugin = {
-            register: require('..'),
-            options: options
-        };
-
-        server.register(plugin, (err) => {
-
-            expect(err).to.not.exist();
-
-            const Bar = server.waterline.collections.bar;
-            const Zoo = server.waterline.collections.zoo;
-
-            expect(Bar).to.be.an.object();
-            expect(Zoo).to.be.an.object();
-            expect(Bar.iHaveWaterline()).to.shallow.equal(server.waterline);
-            expect(Zoo.iHaveWaterline()).to.shallow.equal(server.waterline);
             done();
         });
 
