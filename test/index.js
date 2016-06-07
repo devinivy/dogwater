@@ -50,7 +50,7 @@ experiment('Dogwater', () => {
     const teardownSuccessAdapters = {
         foo: {
             identity: 'foo',
-            teardown: (cb) => {
+            teardown: (conn, cb) => {
 
                 toreDown = true;
                 cb();
@@ -60,7 +60,7 @@ experiment('Dogwater', () => {
 
     const teardownNoIdAdapters = {
         foo: {
-            teardown: (cb) => {
+            teardown: (conn, cb) => {
 
                 toreDown = true;
                 cb();
