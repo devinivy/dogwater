@@ -29,12 +29,12 @@
     "waterline": ">=0.10.0 <0.13.0"
   },
   "devDependencies": {
-    "code": "2.x.x",
+    "code": "3.x.x",
     "coveralls": "2.x.x",
     "hapi": "13.x.x",
     "lab": "10.x.x",
     "sails-memory": "0.10.x",
-    "waterline": "0.10.x"
+    "waterline": "0.12.x"
   },
   "author": "Devin Ivy <devin@bigroomstudios.com>",
   "license": "MIT"

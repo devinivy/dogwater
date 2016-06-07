@@ -476,8 +476,8 @@ experiment('Dogwater', () => {
 
             expect(Bar).to.be.an.object();
             expect(Zoo).to.be.an.object();
-            expect(Bar.iHaveWaterline()).to.equal(server.waterline);
-            expect(Zoo.iHaveWaterline()).to.equal(server.waterline);
+            expect(Bar.iHaveWaterline()).to.shallow.equal(server.waterline);
+            expect(Zoo.iHaveWaterline()).to.shallow.equal(server.waterline);
             done();
         });
 
