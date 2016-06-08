@@ -14,10 +14,10 @@ const lab = exports.lab = Lab.script();
 const expect = Code.expect;
 const beforeEach = lab.beforeEach;
 const afterEach = lab.afterEach;
-const experiment = lab.experiment;
-const test = lab.test;
+const describe = lab.describe;
+const it = lab.it;
 
-experiment('Dogwater', () => {
+describe('Dogwater', () => {
 
     // This will be a hapi server for each test.
     let server;
@@ -39,45 +39,16 @@ experiment('Dogwater', () => {
     // Fail upon registering a connection
     const failureAdapters = {
         foo: {
-            registerConnection: (one, two, cb) => {
+            registerConnection: (x, y, cb) => {
 
                 cb(new Error('Adapter test error!'));
             }
         }
     };
 
-    // Teardown tests
-    const teardownSuccessAdapters = {
-        foo: {
-            identity: 'foo',
-            teardown: (conn, cb) => {
-
-                toreDown = true;
-                cb();
-            }
-        }
-    };
-
-    const teardownNoIdAdapters = {
-        foo: {
-            teardown: (conn, cb) => {
-
-                toreDown = true;
-                cb();
-            }
-        }
-    };
-
-    const teardownNoMethodAdapters = {
-        foo: {
-            identity: 'foo'
-        }
-    };
-
     const modelsRawFile = './models.definition.raw.js';
 
     let performTeardown;
-    let toreDown;
 
     // Setup hapi server to register the plugin
     beforeEach((done) => {
@@ -86,7 +57,6 @@ experiment('Dogwater', () => {
         server.connection();
 
         performTeardown = true;
-        toreDown = false;
 
         done();
     });
@@ -95,14 +65,13 @@ experiment('Dogwater', () => {
     afterEach((done) => {
 
         if (performTeardown) {
-            server.waterline.teardown(done);
+            return server.waterline.teardown(done);
         }
-        else {
-            done();
-        }
+
+        return done();
     });
 
-    test('takes its `models` option as a relative path.', (done) => {
+    it('takes its `models` option as a relative path during registration.', (done) => {
 
         const options = {
             connections: connections,
@@ -118,12 +87,14 @@ experiment('Dogwater', () => {
         server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
+
+            performTeardown = false;
             done();
         });
 
     });
 
-    test('takes its `models` option as an absolute path.', (done) => {
+    it('takes its `models` option as an absolute path during registration.', (done) => {
 
         const options = {
             connections: connections,
@@ -139,12 +110,14 @@ experiment('Dogwater', () => {
         server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
+
+            performTeardown = false;
             done();
         });
 
     });
 
-    test('takes its `models` option as an array of objects.', (done) => {
+    it('takes its `models` option as an array of objects during registration.', (done) => {
 
         const options = {
             connections: connections,
@@ -160,12 +133,14 @@ experiment('Dogwater', () => {
         server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
+
+            performTeardown = false;
             done();
         });
 
     });
 
-    test('throws if the `models` option is not an array or string.', (done) => {
+    it('throws if the `models` option is not an array or string.', (done) => {
 
         const options = {
             connections: connections,
@@ -180,21 +155,17 @@ experiment('Dogwater', () => {
 
         expect(() => {
 
-            server.register(plugin, (err) => {
+            server.register(plugin, (ignoreErr) => {
 
-                expect(err).to.not.exist();
-
-                // We should never get here
-                expect(true).to.not.equal(true);
+                done(new Error('Should not make it here.'));
             });
-        }).to.throw('Model definitions need to be specified as an array or path to be required.');
+        }).to.throw(/^Bad plugin options passed to dogwater\./);
 
         performTeardown = false;
-
         done();
     });
 
-    test('takes its `adapters` specified as a string.', (done) => {
+    it('takes its `adapters` specified as a string during registration.', (done) => {
 
         const options = {
             connections: connections,
@@ -210,12 +181,14 @@ experiment('Dogwater', () => {
         server.register(plugin, (err) => {
 
             expect(err).to.not.exist();
+
+            performTeardown = false;
             done();
         });
 
     });
 
-    test('exposes Waterline collections, connections, and schema.', (done) => {
+    it('decorates Waterline onto the server.', (done) => {
 
         const options = {
             connections: connections,
@@ -232,13 +205,15 @@ experiment('Dogwater', () => {
 
             expect(err).not.to.exist();
 
+            expect(server.waterline).to.be.instanceof(Waterline);
+
             server.initialize((err) => {
 
                 expect(err).not.to.exist();
 
-                const collections = server.plugins.dogwater.collections;
-                const conns = server.plugins.dogwater.connections;
-                const schema = server.plugins.dogwater.schema;
+                const collections = server.waterline.collections;
+                const conns = server.waterline.connections;
+                const schema = server.waterline.schema;
 
                 expect(collections.bar).to.be.an.object();
                 expect(collections.zoo).to.be.an.object();
@@ -260,7 +235,7 @@ experiment('Dogwater', () => {
 
     });
 
-    test('passes its `defaults` option to waterline.', (done) => {
+    it('passes its `defaults` option to waterline during registration.', (done) => {
 
         const options = {
             connections: connections,
@@ -278,106 +253,22 @@ experiment('Dogwater', () => {
 
             expect(err).to.not.exist();
 
-            const collections = server.plugins.dogwater.collections;
-            expect(collections.bar.migrate).to.equal('create');
-            expect(collections.zoo.migrate).to.equal('safe');
-
-            done();
-        });
-
-    });
-
-    test('exposes connection teardown method, skips when method missing.', (done) => {
-
-        const options = {
-            connections: connections,
-            adapters: teardownNoMethodAdapters,
-            models: require(modelsRawFile)
-        };
-
-        const plugin = {
-            register: require('..'),
-            options: options
-        };
-
-        server.register(plugin, (err) => {
-
-            expect(err).not.to.exist();
-
-            const teardown = server.plugins.dogwater.teardown;
-
-            expect(toreDown).to.equal(false);
-            teardown((err) => {
+            server.initialize((err) => {
 
                 expect(err).to.not.exist();
-                expect(toreDown).to.equal(false);
+
+                const collections = server.waterline.collections;
+                expect(collections.bar.migrate).to.equal('create');
+                expect(collections.zoo.migrate).to.equal('safe');
+
                 done();
             });
+
         });
 
     });
 
-    test('exposes connection teardown method, succeeds when adapter identity missing.', (done) => {
-
-        const options = {
-            connections: connections,
-            adapters: teardownNoIdAdapters,
-            models: require(modelsRawFile)
-        };
-
-        const plugin = {
-            register: require('..'),
-            options: options
-        };
-
-        server.register(plugin, (err) => {
-
-            expect(err).not.to.exist();
-
-            const teardown = server.waterline.teardown;
-
-            expect(toreDown).to.equal(false);
-            teardown((err) => {
-
-                expect(err).to.not.exist();
-                expect(toreDown).to.equal(true);
-                done();
-            });
-        });
-
-    });
-
-    test('exposes connection teardown method, succeeds with identity and method.', (done) => {
-
-        const options = {
-            connections: connections,
-            adapters: teardownSuccessAdapters,
-            models: require(modelsRawFile)
-        };
-
-        const plugin = {
-            register: require('..'),
-            options: options
-        };
-
-        server.register(plugin, (err) => {
-
-            expect(err).not.to.exist();
-
-            const teardown = server.waterline.teardown;
-
-            expect(toreDown).to.equal(false);
-            teardown((err) => {
-
-                expect(err).to.not.exist();
-                expect(toreDown).to.equal(true);
-                done();
-            });
-        });
-
-    });
-
-    test('decorates Waterline collections onto request.', (done) => {
+    it('decorates Waterline collections onto request.', (done) => {
 
         const options = {
             connections: connections,
@@ -422,29 +313,7 @@ experiment('Dogwater', () => {
 
     });
 
-    test('decorates Waterline onto the server.', (done) => {
-
-        const options = {
-            connections: connections,
-            adapters: dummyAdapters,
-            models: require(modelsRawFile)
-        };
-
-        const plugin = {
-            register: require('..'),
-            options: options
-        };
-
-        server.register(plugin, (err) => {
-
-            expect(err).to.not.exist();
-            expect(server.waterline).to.be.instanceof(Waterline);
-            done();
-        });
-
-    });
-
-    test('errors on Waterline failure.', (done) => {
+    it('errors on Waterline failure during onPreStart.', (done) => {
 
         const options = {
             connections: connections,
@@ -459,12 +328,18 @@ experiment('Dogwater', () => {
 
         server.register(plugin, (err) => {
 
-            expect(err).to.exist();
-            expect(err.message).to.equal('Adapter test error!');
+            expect(err).to.not.exist();
 
-            performTeardown = false;
+            server.initialize((err) => {
 
-            done();
+                expect(err).to.exist();
+                expect(err.message).to.equal('Adapter test error!');
+
+                performTeardown = false;
+
+                done();
+            });
+
         });
 
     });
