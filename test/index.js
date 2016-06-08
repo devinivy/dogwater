@@ -95,7 +95,7 @@ experiment('Dogwater', () => {
     afterEach((done) => {
 
         if (performTeardown) {
-            server.plugins.dogwater.teardown(done);
+            server.waterline.teardown(done);
         }
         else {
             done();
@@ -232,24 +232,30 @@ experiment('Dogwater', () => {
 
             expect(err).not.to.exist();
 
-            const collections = server.plugins.dogwater.collections;
-            const conns = server.plugins.dogwater.connections;
-            const schema = server.plugins.dogwater.schema;
+            server.initialize((err) => {
 
-            expect(collections.bar).to.be.an.object();
-            expect(collections.zoo).to.be.an.object();
+                expect(err).not.to.exist();
 
-            expect(conns).to.be.an.object();
-            expect(conns.myFoo).to.be.an.object();
-            expect(conns.myFoo._collections).to.once.include(['bar', 'zoo']);
+                const collections = server.plugins.dogwater.collections;
+                const conns = server.plugins.dogwater.connections;
+                const schema = server.plugins.dogwater.schema;
 
-            expect(schema).to.be.an.object();
-            expect(schema.bar).to.be.an.object();
-            expect(schema.zoo).to.be.an.object();
-            expect(schema.bar.identity).to.equal('bar');
-            expect(schema.zoo.identity).to.equal('zoo');
+                expect(collections.bar).to.be.an.object();
+                expect(collections.zoo).to.be.an.object();
 
-            done();
+                expect(conns).to.be.an.object();
+                expect(conns.myFoo).to.be.an.object();
+                expect(conns.myFoo._collections).to.once.include(['bar', 'zoo']);
+
+                expect(schema).to.be.an.object();
+                expect(schema.bar).to.be.an.object();
+                expect(schema.zoo).to.be.an.object();
+                expect(schema.bar.identity).to.equal('bar');
+                expect(schema.zoo.identity).to.equal('zoo');
+
+                done();
+            });
+
         });
 
     });
@@ -328,7 +334,7 @@ experiment('Dogwater', () => {
 
             expect(err).not.to.exist();
 
-            const teardown = server.plugins.dogwater.teardown;
+            const teardown = server.waterline.teardown;
 
             expect(toreDown).to.equal(false);
             teardown((err) => {
@@ -358,7 +364,7 @@ experiment('Dogwater', () => {
 
             expect(err).not.to.exist();
 
-            const teardown = server.plugins.dogwater.teardown;
+            const teardown = server.waterline.teardown;
 
             expect(toreDown).to.equal(false);
             teardown((err) => {
@@ -393,7 +399,7 @@ experiment('Dogwater', () => {
                 method: 'GET',
                 handler: (request, reply) => {
 
-                    const collections = request.collections;
+                    const collections = request.collections();
 
                     expect(collections.bar).to.be.an.object();
                     expect(collections.zoo).to.be.an.object();
@@ -402,10 +408,16 @@ experiment('Dogwater', () => {
                 }
             });
 
-            server.inject({ url: '/', method: 'GET' }, (response) => {
+            server.initialize((err) => {
 
-                done();
+                expect(err).not.to.exist();
+
+                server.inject({ url: '/', method: 'GET' }, (response) => {
+
+                    done();
+                });
             });
+
         });
 
     });
