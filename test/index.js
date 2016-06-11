@@ -271,6 +271,192 @@ describe('Dogwater', () => {
         });
     });
 
+    it('provides only models registered in plugin from request.collections().', (done) => {
+
+        const models = require(modelsFile);
+
+        const options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: [models[0]]
+        };
+
+        getServer(options, (err, server) => {
+
+            expect(err).not.to.exist();
+
+            server.route({
+                path: '/root',
+                method: 'get',
+                handler: (request, reply) => {
+
+                    const collections = request.collections();
+                    expect(collections).to.have.length(1);
+                    expect(collections.thismodel.identity).to.equal('thismodel');
+                    reply({ ok: 'root' });
+                }
+            });
+
+            const plugin = (srv, opts, next) => {
+
+                srv.dogwater(models[1]);
+                srv.route({
+                    path: '/plugin',
+                    method: 'get',
+                    handler: (request, reply) => {
+
+                        const collections = request.collections();
+                        expect(collections).to.have.length(1);
+                        expect(collections.thatmodel.identity).to.equal('thatmodel');
+                        reply({ ok: 'plugin' });
+                    }
+                });
+                next();
+            };
+
+            plugin.attributes = { name: 'my-plugin' };
+
+            server.register(plugin, (err) => {
+
+                expect(err).to.not.exist();
+
+                server.initialize((err) => {
+
+                    expect(err).to.not.exist();
+
+                    server.inject({ url: '/root', method: 'get' }, (res1) => {
+
+                        expect(res1.result).to.equal({ ok: 'root' });
+
+                        server.inject({ url: '/plugin', method: 'get' }, (res2) => {
+
+                            expect(res2.result).to.equal({ ok: 'plugin' });
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+    });
+
+    it('provides empty object from request.collections() if plugin defined no models.', (done) => {
+
+        const options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: require(modelsFile)
+        };
+
+        getServer(options, (err, server) => {
+
+            expect(err).not.to.exist();
+
+            const plugin = (srv, opts, next) => {
+
+                srv.route({
+                    path: '/',
+                    method: 'get',
+                    handler: (request, reply) => {
+
+                        const collections = request.collections();
+                        expect(collections).to.be.an.object();
+                        expect(collections).to.have.length(0);
+                        reply({ ok: true });
+                    }
+                });
+                next();
+            };
+
+            plugin.attributes = { name: 'my-plugin' };
+
+            server.register(plugin, (err) => {
+
+                expect(err).to.not.exist();
+
+                server.initialize((err) => {
+
+                    expect(err).to.not.exist();
+
+                    server.inject({ url: '/', method: 'get' }, (response) => {
+
+                        expect(response.result).to.equal({ ok: true });
+                        done();
+                    });
+                });
+            });
+        });
+    });
+
+    it('provides all models across plugins from request.collections(true).', (done) => {
+
+        const models = require(modelsFile);
+
+        const options = {
+            connections: connections,
+            adapters: dummyAdapters,
+            models: [models[0]]
+        };
+
+        getServer(options, (err, server) => {
+
+            expect(err).not.to.exist();
+
+            server.route({
+                path: '/root',
+                method: 'get',
+                handler: (request, reply) => {
+
+                    const collections = request.collections(true);
+                    expect(collections).to.have.length(2);
+                    expect(collections.thismodel.identity).to.equal('thismodel');
+                    expect(collections.thatmodel.identity).to.equal('thatmodel');
+                    reply({ ok: 'root' });
+                }
+            });
+
+            const plugin = (srv, opts, next) => {
+
+                srv.dogwater(models[1]);
+                srv.route({
+                    path: '/plugin',
+                    method: 'get',
+                    handler: (request, reply) => {
+
+                        const collections = request.collections(true);
+                        expect(collections).to.have.length(2);
+                        expect(collections.thismodel.identity).to.equal('thismodel');
+                        expect(collections.thatmodel.identity).to.equal('thatmodel');
+                        reply({ ok: 'plugin' });
+                    }
+                });
+                next();
+            };
+
+            plugin.attributes = { name: 'my-plugin' };
+
+            server.register(plugin, (err) => {
+
+                expect(err).to.not.exist();
+
+                server.initialize((err) => {
+
+                    expect(err).to.not.exist();
+
+                    server.inject({ url: '/root', method: 'get' }, (res1) => {
+
+                        expect(res1.result).to.equal({ ok: 'root' });
+
+                        server.inject({ url: '/plugin', method: 'get' }, (res2) => {
+
+                            expect(res2.result).to.equal({ ok: 'plugin' });
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+    });
+
     it('initializes Waterline during onPreStart.', (done) => {
 
         const options = {
