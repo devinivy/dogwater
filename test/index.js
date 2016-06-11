@@ -7,6 +7,7 @@ const Code = require('code');
 const Hapi = require('hapi');
 const Path = require('path');
 const Waterline = require('waterline');
+const ModelsFixture = require('./models');
 const Dogwater = require('..');
 
 // Test shortcuts
@@ -115,7 +116,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: ModelsFixture
         };
 
         getServer(options, (err, server) => {
@@ -175,7 +176,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: ModelsFixture
         };
 
         getServer(options, (err, server) => {
@@ -217,7 +218,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile),
+            models: ModelsFixture,
             defaults: defaults
         };
 
@@ -245,7 +246,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: ModelsFixture
         };
 
         getServer(options, (err, server) => {
@@ -273,12 +274,10 @@ describe('Dogwater', () => {
 
     it('provides only models registered in plugin from request.collections().', (done) => {
 
-        const models = require(modelsFile);
-
         const options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: [models[0]]
+            models: [ModelsFixture[0]]
         };
 
         getServer(options, (err, server) => {
@@ -299,7 +298,7 @@ describe('Dogwater', () => {
 
             const plugin = (srv, opts, next) => {
 
-                srv.dogwater(models[1]);
+                srv.dogwater(ModelsFixture[1]);
                 srv.route({
                     path: '/plugin',
                     method: 'get',
@@ -344,7 +343,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: ModelsFixture
         };
 
         getServer(options, (err, server) => {
@@ -389,12 +388,10 @@ describe('Dogwater', () => {
 
     it('provides all models across plugins from request.collections(true).', (done) => {
 
-        const models = require(modelsFile);
-
         const options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: [models[0]]
+            models: [ModelsFixture[0]]
         };
 
         getServer(options, (err, server) => {
@@ -416,7 +413,7 @@ describe('Dogwater', () => {
 
             const plugin = (srv, opts, next) => {
 
-                srv.dogwater(models[1]);
+                srv.dogwater(ModelsFixture[1]);
                 srv.route({
                     path: '/plugin',
                     method: 'get',
@@ -462,7 +459,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: ModelsFixture
         };
 
         getServer(options, (err, server) => {
@@ -486,7 +483,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: failureAdapters,
-            models: require(modelsFile)
+            models: ModelsFixture
         };
 
         getServer(options, (err, server) => {
@@ -515,9 +512,8 @@ describe('Dogwater', () => {
 
             const plugin = (srv, opts, next) => {
 
-                const models = require(modelsFile);
-                srv.dogwater(models[0]);
-                srv.dogwater(models[1]);
+                srv.dogwater(ModelsFixture[0]);
+                srv.dogwater(ModelsFixture[1]);
                 srv.app.myState = state(srv);
                 next();
             };
@@ -547,7 +543,7 @@ describe('Dogwater', () => {
 
             const plugin = (srv, opts, next) => {
 
-                srv.dogwater(require(modelsFile)[0]);
+                srv.dogwater(ModelsFixture[0]);
                 next();
             };
 
@@ -573,7 +569,7 @@ describe('Dogwater', () => {
 
             const plugin = (srv, opts, next) => {
 
-                srv.dogwater(require(modelsFile));
+                srv.dogwater(ModelsFixture);
                 next();
             };
 
@@ -607,7 +603,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: { myAdapter },
-            models: require(modelsFile)
+            models: ModelsFixture
         };
 
         getServer(options, (err, server) => {
@@ -652,7 +648,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: { myAdapter },
-            models: require(modelsFile),
+            models: ModelsFixture,
             teardownOnStop: false
         };
 
@@ -707,7 +703,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: ModelsFixture
         };
 
         getServer(options, (err, server) => {
@@ -737,7 +733,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: ModelsFixture
         };
 
         getServer(options, (err, server) => {
@@ -767,7 +763,7 @@ describe('Dogwater', () => {
         const options = {
             connections: connections,
             adapters: dummyAdapters,
-            models: require(modelsFile)
+            models: ModelsFixture
         };
 
         getServer(options, (err, server) => {
