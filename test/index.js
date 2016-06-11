@@ -195,6 +195,21 @@ describe('Dogwater', () => {
         });
     });
 
+    it('can be registered multiple times.', (done) => {
+
+        getServer({}, (err, server) => {
+
+            expect(err).to.not.exist();
+            expect(server.registrations.dogwater).to.exist();
+
+            server.register(Dogwater, (err) => {
+
+                expect(err).not.to.exist();
+                done();
+            });
+        });
+    });
+
     describe('plugin registration', () => {
 
         it('takes `models` option as a relative path.', (done) => {
