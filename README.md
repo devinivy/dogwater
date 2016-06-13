@@ -7,22 +7,21 @@ A [hapi](https://github.com/hapijs/hapi) plugin integrating [Waterline ORM](http
 [*v1.0.0 release notes*](https://github.com/devinivy/dogwater/issues/25)
 
 ## Usage
-```node
-var Hapi = require('hapi');
-var Dogwater = require('dogwater');
-var Memory = require('sails-memory');
+```js
+const Hapi = require('hapi');
+const Dogwater = require('dogwater');
+const Memory = require('sails-memory');
 
-var server = new Hapi.Server();
+const server = new Hapi.Server();
 server.connection({ port: 3000 });
 
 server.route({
-    method: 'GET',
+    method: 'get',
     path: '/dogs/{id}',
     handler: function (request, reply) {
 
-        var Dogs = request.collections.dogs;
+        const Dogs = request.collections().dogs;
 
-        // Reply with promise
         reply(Dogs.findOne(request.params.id));
     }
 });
@@ -34,25 +33,8 @@ server.register({
             memory: Memory
         },
         connections: {
-            simple: { adapter: 'memory' },
-        },
-        models: [
-            {
-                identity: 'dogs',
-                connection: 'simple',
-                attributes: { name: 'string' }
-            }
-        ],
-        fixtures: [
-            {
-                model: 'dogs',
-                items: [
-                    { name: 'Guinness' },
-                    { name: 'Sully' },
-                    { name: 'Ren' }
-                ]
-            }
-        ],
+            simple: { adapter: 'memory' }
+        }
     }
 }, function (err) {
 
@@ -60,36 +42,58 @@ server.register({
         throw err;
     }
 
-    server.start(function () {
+    // Define a model using a connection declared above
+    server.dogwater({
+        identity: 'dogs',
+        connection: 'simple',
+        attributes: { name: 'string' }
+    });
 
-       console.log('Server running at:', server.info.uri);
+    server.start(function (err) {
+
+        if (err) {
+            throw err;
+        }
+
+        // Add some records
+
+        const Dogs = server.collections().dogs;
+
+        Dogs.create([
+            { name: 'Guinness' },
+            { name: 'Sully' },
+            { name: 'Ren' }
+        ])
+        .then(() => {
+
+            console.log(`Go find some dogs at ${server.info.uri}`);
+        });
+        .catch((err) => {
+
+            console.error(err);
+        });
     });
 });
 ```
-### Interface
+
+### API
 #### Server
  - `server.waterline` - the raw Waterline ORM object.
+ - `server.collections([all])`
+ - `server.dogwater(config)`
 
 #### Request
- - `request.collections` - an object containing all Waterline collections indexed by identity.
+ - `request.collections([all])`
 
-#### Exposed
- - `server.plugins.dogwater.collections` - an object containing all Waterline collections indexed by identity.
- - `server.plugins.dogwater.connections` - an object containing all Waterline connections indexed by name.
- - `server.plugins.dogwater.schema` - an object containing the normalized Waterline schema.
- - `server.plugins.dogwater.teardown(cb)` - a method to teardown all Waterline-managed connections, `cb` taking a single error argument.
-
-### Options
+### Registration Options
  - `adapters` - An object whose keys are adapter names (to be referenced in the `connections` option), and whose values are [Waterline adapter modules](https://github.com/balderdashy/waterline-docs/blob/master/README.md#supported-adapters) or string names of adapter modules to be `require`d.
  - `connections` - An object containing a [Waterline connections configuration](http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.connections.html).  Each key should be a connection name, and each value should be an object specifying the relevant adapter's name plus any adapter connection configurations.
- - `models` - Either a relative (to the current working directory) or absolute path to be `require`d that will return an array of [unextended Waterline collections](https://github.com/balderdashy/waterline-docs/blob/master/models/models.md#how-to-define-a-model), or an array of unextended Waterline collections.  If a function is an element of this array, it will be called with the raw Waterline ORM object as an argument.  It is expected to return an unextended Waterline collection.  This allows one to easily reference Waterline in lifecycle callbacks.
+ - `models` - Either a relative (to the current working directory) or absolute path to be `require`d that will return an array of [unextended Waterline collections](https://github.com/balderdashy/waterline-docs/blob/master/models/models.md#how-to-define-a-model), or an array of unextended Waterline collections.
  - `defaults` - An optional object containing Waterline collection default settings.  This is a standard Waterline initialization option.
- - `fixtures` - An optional object containing the configuration used by [waterline-fixtures](https://github.com/devinivy/waterline-fixtures) to load data fixtures, with the exception of its `collections` option, which is automatically set by dogwater.  Alternately, this option may specify an array of fixture data in the format prescribed by waterline-fixtures (which can be seen in the usage example above).
+ - `teardownOnStop`
 
-Dogwater's options aim to be friendly with [rejoice](https://github.com/hapijs/rejoice) manifests.
+Dogwater's registration options aim to be friendly with [rejoice](https://github.com/hapijs/rejoice) manifests.
 
 ## Extras
  - [Waterline ORM docs](https://github.com/balderdashy/waterline-docs)
- - [devinivy/waterline-fixtures](https://github.com/devinivy/waterline-fixtures)
- - [devinivy/bedwetter](https://github.com/devinivy/bedwetter)
  - [hapijs/rejoice](https://github.com/hapijs/rejoice)
