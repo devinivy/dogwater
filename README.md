@@ -67,7 +67,7 @@ server.register({
         .then(() => {
 
             console.log(`Go find some dogs at ${server.info.uri}`);
-        });
+        })
         .catch((err) => {
 
             console.error(err);
