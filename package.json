@@ -3,16 +3,17 @@
   "version": "1.1.0",
   "description": "A hapi plugin integrating Waterline ORM",
   "main": "lib/index.js",
+  "scripts": {
+    "test": "lab -a code -t 100 -L",
+    "coveralls": "lab -r lcov | coveralls"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/devinivy/dogwater"
   },
-  "contributors": [
-    {
-      "name": "devinivy",
-      "github": "https://github.com/devinivy"
-    }
-  ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "keywords": [
     "hapi",
     "plugin",
@@ -21,22 +22,21 @@
     "orm"
   ],
   "dependencies": {
-    "hoek": "~2.14.0",
-    "items": "~1.1.0",
-    "waterline": "^0.10.x",
-    "waterline-fixtures": "^0.2.x"
+    "hoek": "4.x.x",
+    "joi": "8.x.x"
+  },
+  "peerDependencies": {
+    "hapi": ">=10.0.0 <14.0.0",
+    "waterline": ">=0.10.0 <0.13.0"
   },
   "devDependencies": {
-    "lab": "6.x.x",
-    "code": "1.x.x",
+    "code": "3.x.x",
     "coveralls": "2.x.x",
-    "hapi": "8.x.x",
-    "sails-memory": "0.10.x"
+    "hapi": "13.x.x",
+    "lab": "10.x.x",
+    "sails-memory": "0.10.x",
+    "waterline": "0.12.x"
   },
-  "scripts": {
-    "test": "node_modules/.bin/lab -I \"inspect,URI\" -a code -t 100 -L",
-    "coveralls": "node_modules/.bin/lab -r lcov | node_modules/.bin/coveralls"
-  },
-  "author": "Devin Ivy",
+  "author": "Devin Ivy <devin@bigroomstudios.com>",
   "license": "MIT"
 }

@@ -1,17 +1,17 @@
+'use strict';
+
 module.exports = [
     {
-        identity: 'bar',
-        connection: 'myFoo',
+        identity: 'thismodel',
+        connection: 'myConnection',
         migrate: 'create',
-
         attributes: {
             doo: 'string'
         }
     },
     {
-        identity: 'zoo',
-        connection: 'myFoo',
-
+        identity: 'thatmodel',
+        connection: 'myConnection',
         attributes: {
             ding: 'float'
         }
