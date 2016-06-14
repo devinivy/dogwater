@@ -7,7 +7,7 @@ A [hapi](https://github.com/hapijs/hapi) plugin integrating [Waterline ORM](http
 [*v2.0.0 release notes*](https://github.com/devinivy/dogwater/issues/46)
 
 ## Usage
-Dogwater is used to define models, database adapters, and connections for use with Waterline ORM.  Those collections then become available within your hapi server where it is most convenient.  It has been tailored to multi-plugin deployments, where each plugin may set clear boundaries in defining and using its own Waterline collections.  It's safe to register dogwater multiple times, wherever you'd like to use it, as it protects against collisions in adapters, connections, model definitions, and more.
+Dogwater is used to define models, database adapters, and connections for use with Waterline ORM.  Those models then become available as Waterline collections within your hapi server where it is most convenient.  It has been tailored to multi-plugin deployments, where each plugin may set clear boundaries in defining and using its own collections.  It's safe to register dogwater multiple times, wherever you'd like to use it, as it protects against collisions in adapters, connections, model definitions, and more.
 
 ```js
 const Hapi = require('hapi');
@@ -103,7 +103,7 @@ Registers additional adapters, connections, or model definitions.  The `config` 
   - An object specifying,
     - `adapters` - an object whose keys are adapter names (to be referenced by a connection config), and whose values are Waterline adapter modules.
     - `connections` - a Waterline connections configuration.  Each key should be a connection name, and each value should be an object specifying the relevant adapter's name plus any adapter connection configurations.
-    - `models` - an array of model definitions.
+    - `models` - an array of model definitions.  Any models registered this way are associated with the active plugin/realm.
 
 ### Request Decorations
 #### `request.collections([all])`
@@ -112,3 +112,5 @@ Returns an object mapping collection identities to Waterline collections.  When 
 ## Extras
   - [Waterline ORM docs](https://github.com/balderdashy/waterline-docs)
   - [hapijs/rejoice](https://github.com/hapijs/rejoice)
+  - Compatible with [haute-couture](https://github.com/devinivy/haute-couture)
+  - One of the core plugins of the hapi [boilerplate-api](https://github.com/devinivy/boilerplate-api)
