@@ -23,16 +23,16 @@
   ],
   "dependencies": {
     "hoek": "4.x.x",
-    "joi": "8.x.x"
+    "joi": "9.x.x"
   },
   "peerDependencies": {
-    "hapi": ">=10.0.0 <14.0.0",
+    "hapi": ">=10.0.0 <15.0.0",
     "waterline": ">=0.10.0 <0.13.0"
   },
   "devDependencies": {
     "code": "3.x.x",
     "coveralls": "2.x.x",
-    "hapi": "13.x.x",
+    "hapi": "14.x.x",
     "lab": "10.x.x",
     "sails-memory": "0.10.x",
     "waterline": "0.12.x"
