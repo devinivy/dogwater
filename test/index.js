@@ -38,7 +38,7 @@ describe('Dogwater', () => {
 
         server.register({
             register: Dogwater,
-            options: options
+            options
         }, (err) => {
 
             if (err) {
@@ -67,7 +67,7 @@ describe('Dogwater', () => {
     it('initializes Waterline during onPreStart.', (done) => {
 
         const options = {
-            connections: connections,
+            connections,
             adapters: dummyAdapters,
             models: ModelsFixture
         };
@@ -89,7 +89,7 @@ describe('Dogwater', () => {
     it('errors on Waterline failure during onPreStart.', (done) => {
 
         const options = {
-            connections: connections,
+            connections,
             adapters: {
                 myAdapter: {
                     registerConnection: (x, y, cb) => {
@@ -127,7 +127,7 @@ describe('Dogwater', () => {
         };
 
         const options = {
-            connections: connections,
+            connections,
             adapters: { myAdapter },
             models: ModelsFixture
         };
@@ -170,7 +170,7 @@ describe('Dogwater', () => {
         };
 
         const options = {
-            connections: connections,
+            connections,
             adapters: { myAdapter },
             models: ModelsFixture,
             teardownOnStop: false
@@ -215,7 +215,7 @@ describe('Dogwater', () => {
         it('takes `models` option as a relative path.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: Path.normalize('./test/' + modelsFile)
             };
@@ -235,7 +235,7 @@ describe('Dogwater', () => {
         it('takes `models` option as an absolute path.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: Path.normalize(__dirname + '/' + modelsFile)
             };
@@ -255,7 +255,7 @@ describe('Dogwater', () => {
         it('takes `models` option as an array of objects.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: ModelsFixture
             };
@@ -275,7 +275,7 @@ describe('Dogwater', () => {
         it('throws if the `models` option is not an array or string.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: { some: 'object' }
             };
@@ -296,8 +296,8 @@ describe('Dogwater', () => {
             const adapters = { myAdapter: 'sails-memory' };
 
             const options = {
-                connections: connections,
-                adapters: adapters,
+                connections,
+                adapters,
                 models: Path.normalize(__dirname + '/' + modelsFile)
             };
 
@@ -315,7 +315,7 @@ describe('Dogwater', () => {
         it('passes `defaults` option to Waterline.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: ModelsFixture,
                 defaults: { migrate: 'safe' }
@@ -392,7 +392,7 @@ describe('Dogwater', () => {
         it('aggregates models, connections, and adapters across plugins.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: ModelsFixture
             };
@@ -548,7 +548,7 @@ describe('Dogwater', () => {
         it('throws on model identity collision.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: ModelsFixture
             };
@@ -577,7 +577,7 @@ describe('Dogwater', () => {
         it('throws on connection name collision.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: ModelsFixture
             };
@@ -606,7 +606,7 @@ describe('Dogwater', () => {
         it('throws on adapter name collision.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: ModelsFixture
             };
@@ -638,7 +638,7 @@ describe('Dogwater', () => {
         it('return empty object before server initialization.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: ModelsFixture
             };
@@ -672,7 +672,7 @@ describe('Dogwater', () => {
         it('solely return collections registered in route\'s realm by default.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: [ModelsFixture[0]]
             };
@@ -752,7 +752,7 @@ describe('Dogwater', () => {
         it('return empty object from if no models defined in route\'s realm.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: ModelsFixture
             };
@@ -807,7 +807,7 @@ describe('Dogwater', () => {
         it('return collections across all realms when passed true.', (done) => {
 
             const options = {
-                connections: connections,
+                connections,
                 adapters: dummyAdapters,
                 models: [ModelsFixture[0]]
             };
