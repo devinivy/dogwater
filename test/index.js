@@ -448,9 +448,9 @@ describe('Dogwater', () => {
                         expect(collections.onemodel.identity).to.equal('onemodel');
                         expect(collections.twomodel.identity).to.equal('twomodel');
 
-                        expect(conns.myConnection).to.contain({ config: { adapter: 'myAdapter' } });
-                        expect(conns.oneConnection).to.contain({ config: { adapter: 'twoAdapter' } });
-                        expect(conns.twoConnection).to.contain({ config: { adapter: 'oneAdapter' } });
+                        expect(conns.myConnection).to.part.contain({ config: { adapter: 'myAdapter' } });
+                        expect(conns.oneConnection).to.part.contain({ config: { adapter: 'twoAdapter' } });
+                        expect(conns.twoConnection).to.part.contain({ config: { adapter: 'oneAdapter' } });
 
                         done();
                     });
