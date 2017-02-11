@@ -27,7 +27,7 @@
   },
   "peerDependencies": {
     "hapi": ">=10 <17",
-    "waterline": ">=0.10.0 <0.13.0"
+    "waterline": ">=0.10.0 <0.14.0"
   },
   "devDependencies": {
     "code": "4.x.x",
